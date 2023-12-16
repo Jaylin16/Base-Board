@@ -94,3 +94,20 @@ app.get("/auth", auth, (req, res) => {
     image: req.user.image,
   });
 });
+
+//로그아웃
+app.get("/logout", auth, async (req, res) => {
+  try {
+    const user = await User.findOneAndUpdate(
+      { _id: req.user._id },
+      { token: "" }
+    );
+
+    return res.status(200).send({
+      success: true,
+      message: `${user.nickName} 님 로그아웃 되었습니다.`,
+    });
+  } catch (err) {
+    return res.json({ success: false, err });
+  }
+});

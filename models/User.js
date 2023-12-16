@@ -4,7 +4,6 @@ const saltRounds = 10;
 const jwt = require("jsonwebtoken");
 
 const config = require("../config/key");
-const { json } = require("express");
 
 //쿼리 확인을 위한 디버그 옵션 설정
 mongoose.set("debug", true);
