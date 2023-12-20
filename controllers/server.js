@@ -3,6 +3,7 @@ const app = express();
 const port = 8080;
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const cors = require("cors");
 
 const config = require("../config/key");
 
@@ -12,6 +13,7 @@ const { auth } = require("../middleware/auth");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(cors());
 
 app.listen(port, () => {
   console.log(`${port}서버에 연결되었습니다.`);
@@ -110,4 +112,8 @@ app.get("/logout", auth, async (req, res) => {
   } catch (err) {
     return res.json({ success: false, err });
   }
+});
+
+app.get("/hello", (req, res) => {
+  return res.send("Hello");
 });
