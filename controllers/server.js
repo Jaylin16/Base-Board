@@ -32,7 +32,7 @@ app.post("/signup", async (req, res) => {
     .save()
     .then(() => {
       res.status(200).json({
-        success: true,
+        registerSuccess: true,
       });
     })
     .catch((err) => {
