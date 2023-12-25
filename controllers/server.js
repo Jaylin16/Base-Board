@@ -13,7 +13,13 @@ const { auth } = require("../middleware/auth");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "PUT", "POST", "DELETE"],
+  })
+);
 
 app.listen(port, () => {
   console.log(`${port}서버에 연결되었습니다.`);
@@ -69,6 +75,8 @@ app.post("/login", async (req, res) => {
 
     // 비밀번호까지 맞다면 토큰 생성.
     const userInfoWithToken = await userInfo.createToken();
+
+    console.log("userInfoWithToken in server #79=====>", userInfoWithToken);
 
     // 토큰을 저장해줌. (쿠키 방식)
     res

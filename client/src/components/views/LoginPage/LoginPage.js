@@ -27,10 +27,17 @@ function LoginPage() {
     };
 
     dispatch(loginUser(reqBody)).then((res) => {
+      console.log("res 데이터 in LoginPage #30 =======>", res);
+      const headers = res.headers;
+      console.log("cookie 데이터 in LoginPage #32 =======>", headers);
+
+      // const cookie = res.headers["auth_cookie"];
+      // document.cookie = cookie;
+
       if (res.payload.loginSuccess) {
         navigate("/");
       } else {
-        alert("Error");
+        alert("로그인 실패");
       }
     });
   };
