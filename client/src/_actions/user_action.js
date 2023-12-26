@@ -4,14 +4,13 @@ import { LOGIN_USER, REGISTER_USER, AUTH_USER } from "./types";
 const baseUri = process.env.REACT_APP_BASE_URI;
 
 export function loginUser(submitData) {
-  const request = axios
-    .post(`${baseUri}/login`, submitData)
+  const response = axios
+    .post(`${baseUri}/login`, submitData, { withCredentials: true })
     .then((res) => res.data);
 
-  console.log("헤더 in user_action #12======>", axios.defaults.headers);
   return {
     type: LOGIN_USER,
-    payload: request,
+    payload: response,
   };
 }
 

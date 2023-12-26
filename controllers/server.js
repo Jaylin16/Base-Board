@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: true,
     credentials: true,
-    methods: ["GET", "PUT", "POST", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
 
@@ -76,11 +76,15 @@ app.post("/login", async (req, res) => {
     // 비밀번호까지 맞다면 토큰 생성.
     const userInfoWithToken = await userInfo.createToken();
 
-    console.log("userInfoWithToken in server #79=====>", userInfoWithToken);
+    const cookieOptions = {
+      httpOnly: true,
+      // maxAge: 1000 * 60 * 60 * 24, //1일
+      maxAge: 1000 * 60 * 1, //1분
+    };
 
     // 토큰을 저장해줌. (쿠키 방식)
     res
-      .cookie("auth_cookie", userInfoWithToken.token)
+      .cookie("auth_cookie", userInfoWithToken.token, cookieOptions)
       .status(200)
       .json({
         loginSuccess: true,
