@@ -77,9 +77,9 @@ app.post("/login", async (req, res) => {
     const userInfoWithToken = await userInfo.createToken();
 
     const cookieOptions = {
-      httpOnly: true,
+      // httpOnly: true,
       // maxAge: 1000 * 60 * 60 * 24, //1일
-      maxAge: 1000 * 60 * 1, //1분
+      maxAge: 1000 * 60 * 5, //5분
     };
 
     // 토큰을 저장해줌. (쿠키 방식)
@@ -91,9 +91,7 @@ app.post("/login", async (req, res) => {
         message: `user: ${userInfoWithToken.nickName} 님에게 토큰이 생성되었습니다.`,
       });
   } catch (err) {
-    res
-      .status(500)
-      .json({ loginSuccess: false, message: "로그인에 실패했습니다." });
+    res.json({ loginSuccess: false, message: "로그인에 실패했습니다." });
   }
 });
 
@@ -106,6 +104,7 @@ app.get("/auth", auth, (req, res) => {
     name: req.user.name,
     nickName: req.user.nickName,
     image: req.user.image,
+    isAuth: req.isAuth,
   });
 });
 

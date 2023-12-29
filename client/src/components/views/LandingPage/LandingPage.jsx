@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Auth from "../../../hoc/Auth"
 
 const baseUri = process.env.REACT_APP_BASE_URI;
 

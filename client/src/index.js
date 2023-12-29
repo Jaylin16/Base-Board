@@ -8,6 +8,10 @@ import { Provider } from "react-redux";
 import promiseMiddleware from "redux-promise";
 import rootReducer from "./_reducers";
 import { configureStore, Tuple } from "@reduxjs/toolkit";
+import { BrowserRouter } from "react-router-dom";
+import axios from "axios";
+
+axios.defaults.withCredentials = true;
 
 const store = configureStore({
   reducer: rootReducer,
@@ -16,9 +20,11 @@ const store = configureStore({
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <BrowserRouter>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </BrowserRouter>
 );
 
 // If you want to start measuring performance in your app, pass a function
