@@ -13,7 +13,13 @@ const { auth } = require("../middleware/auth");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+  })
+);
 
 app.listen(port, () => {
   console.log(`${port}서버에 연결되었습니다.`);
@@ -70,18 +76,22 @@ app.post("/login", async (req, res) => {
     // 비밀번호까지 맞다면 토큰 생성.
     const userInfoWithToken = await userInfo.createToken();
 
+    const cookieOptions = {
+      // httpOnly: true,
+      // maxAge: 1000 * 60 * 60 * 24, //1일
+      maxAge: 1000 * 60 * 5, //5분
+    };
+
     // 토큰을 저장해줌. (쿠키 방식)
     res
-      .cookie("auth_cookie", userInfoWithToken.token)
+      .cookie("auth_cookie", userInfoWithToken.token, cookieOptions)
       .status(200)
       .json({
         loginSuccess: true,
         message: `user: ${userInfoWithToken.nickName} 님에게 토큰이 생성되었습니다.`,
       });
   } catch (err) {
-    res
-      .status(500)
-      .json({ loginSuccess: false, message: "로그인에 실패했습니다." });
+    res.json({ loginSuccess: false, message: "로그인에 실패했습니다." });
   }
 });
 
@@ -94,6 +104,7 @@ app.get("/auth", auth, (req, res) => {
     name: req.user.name,
     nickName: req.user.nickName,
     image: req.user.image,
+    isAuth: req.isAuth,
   });
 });
 

@@ -5,9 +5,9 @@ const auth = async (req, res, next) => {
   const token = req.cookies.auth_cookie;
 
   if (!token) {
-    return res.status(400).json({
+    return res.json({
       isAuth: false,
-      message: "로그인이 필요한 서비스 입니다.",
+      message: "토큰이 없습니다.",
     });
   }
 
@@ -23,6 +23,7 @@ const auth = async (req, res, next) => {
     } else {
       req.token = token;
       req.user = user;
+      req.isAuth = true;
 
       next();
     }
