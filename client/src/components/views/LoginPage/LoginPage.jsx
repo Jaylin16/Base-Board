@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../../../_actions/user_action";
 import { useNavigate } from "react-router-dom";
 
-const LoginPage = ({ option }) => {
+const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [Email, setEmail] = useState("");
@@ -26,8 +26,6 @@ const LoginPage = ({ option }) => {
     };
 
     dispatch(loginUser(reqBody)).then((res) => {
-      console.log('res =>', res)
-      console.log('loginSuccess =>', res.payload.loginSuccess)
       if (res.payload.loginSuccess) {
         navigate("/");
       } else {
@@ -44,8 +42,10 @@ const LoginPage = ({ option }) => {
         alignItems: "center",
         width: "100%",
         height: "100vh",
+        flexDirection: "column"
       }}
     >
+      <h2>LoginPage</h2>
       <form
         style={{ display: "flex", flexDirection: "column" }}
         onSubmit={onSubmitHandler}
@@ -57,8 +57,8 @@ const LoginPage = ({ option }) => {
 
         <br />
         <button type="submit">Login</button>
+        <button type="button" onClick={() => navigate('/register')}>Register</button>
       </form>
-      <button type="button" onClick={() => navigate('/register')}>Register</button>
     </div>
   );
 };

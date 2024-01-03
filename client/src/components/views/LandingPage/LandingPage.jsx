@@ -1,12 +1,11 @@
 import { useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Auth from "../../../hoc/Auth"
 
 const baseUri = process.env.REACT_APP_BASE_URI;
 
 function LandingPage() {
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(`${baseUri}/hello`).then((res) => console.log(res.data));
@@ -17,7 +16,7 @@ function LandingPage() {
   };
 
   const onLogoutHandler = () => {
-    axios.get(`${baseUri}/logout`).then((res) => console.log(res.data));
+    axios.get(`${baseUri}/logout`).then((res) => alert(res.data.message));
   };
 
   return (
@@ -28,11 +27,13 @@ function LandingPage() {
         alignItems: "center",
         width: "100%",
         height: "100vh",
+        flexDirection: "column"
       }}
     >
       <h2>LandingPage</h2>
-      <button onClick={onLoginHandler}>Login</button>
-      <button onClick={onLogoutHandler}>Logout</button>
+      <button style={{width: "15%"}} onClick={onLoginHandler}>Login</button>
+      <br />
+      <button style={{width: "15%"}} onClick={onLogoutHandler}>Logout</button>
     </div>
   );
 }

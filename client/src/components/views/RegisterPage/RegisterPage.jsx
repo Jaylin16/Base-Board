@@ -1,36 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { registerUser, auth } from "../../../_actions/user_action";
+import { registerUser } from "../../../_actions/user_action";
 import { useNavigate } from "react-router-dom";
 
-const RegisterPage = ({ option }) => {
-  const dispatch = useDispatch();
+const RegisterPage = () => {
+    const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [Email, setEmail] = useState("");
   const [Name, setName] = useState("");
   const [Password, setPassword] = useState("");
   const [ConfirmPassword, setConfirmPassword] = useState("");
-
-  // useEffect(() => {
-  //   dispatch(auth()).then((res) => {
-  //     console.log("res register=>", res);
-  //     console.log("res.payload.isAuth =>", res.payload.isAuth);
-  //     console.log("option =>", option);
-
-  //     if (!res.payload.isAuth) {
-  //       if (option) {
-  //         navigate("/login");
-  //       } else {
-  //         navigate("/");
-  //       }
-  //     } else {
-  //       if (!option) {
-  //         navigate("/");
-  //       }
-  //     }
-  //   });
-  // }, [dispatch, navigate, option]);
 
   const onEmailHandler = (event) => {
     setEmail(event.currentTarget.value);
@@ -62,9 +42,6 @@ const RegisterPage = ({ option }) => {
     };
 
     dispatch(registerUser(reqBody)).then((res) => {
-      console.log('res =>', res)
-      console.log("res.loginedUser",res.loginedUser);
-      
       if (res.payload.registerSuccess) {
         navigate("/login");
       } else {
@@ -74,8 +51,6 @@ const RegisterPage = ({ option }) => {
     });
   };
 
-
-
   return (
     <div
       style={{
@@ -84,8 +59,10 @@ const RegisterPage = ({ option }) => {
         alignItems: "center",
         width: "100%",
         height: "100vh",
+        flexDirection: "column"
       }}
     >
+      <h2>RegisterPage</h2>
       <form
         style={{ display: "flex", flexDirection: "column" }}
         onSubmit={onSubmitHandler}
