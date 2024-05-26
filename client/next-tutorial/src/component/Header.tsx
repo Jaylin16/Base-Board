@@ -50,7 +50,10 @@ const Header = () => {
               <Image src={searchIcon} alt="search" />
             </button>
           </div>
-          <div css={loginStyles} onClick={() => router.push("/login")}>
+          <div
+            css={loginStyles(pathname.includes("login"))}
+            onClick={() => router.push("/login")}
+          >
             로그인
           </div>
         </div>
@@ -99,7 +102,6 @@ const rootInnerWrapper = css`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  /* min-width: 1396px; */
 `;
 
 const searchStyles = css`
@@ -136,8 +138,16 @@ const logoStyles = css`
   cursor: pointer;
 `;
 
-const loginStyles = css`
+const loginStyles = (isActive: boolean) => css`
   cursor: pointer;
+  border-radius: 5px;
+  background: ${isActive ? "#ffffff" : "transparent"};
+  color: ${isActive ? "#1d3d65" : "white"};
+  padding: 5px 14px;
+  min-width: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const menuItem = (isActive: boolean) => css`
