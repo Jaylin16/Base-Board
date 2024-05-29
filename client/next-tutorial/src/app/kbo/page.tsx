@@ -30,7 +30,7 @@ const Kbo = () => {
     <>
       <div css={rootStyle}>
         <div css={titleWrapper}>
-          <div css={titleStyle}> ⚾️ KBO </div>
+          <div css={titleStyle}> 🇰🇷 KBO 게시판 </div>
           <div css={writeButton}> ✏️ 글 작성 </div>
         </div>
 
