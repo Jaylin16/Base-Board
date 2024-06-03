@@ -1,10 +1,12 @@
 "use client";
 import { css } from "@emotion/react";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import CustomCheckbox from "@/component/common/CustomCheckbox";
 
 const Login: React.FC = () => {
   const [checked, setChecked] = useState(false);
+  const router = useRouter();
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
@@ -40,7 +42,10 @@ const Login: React.FC = () => {
           </div>
 
           <div css={registerButtonWrapper}>
-            <div>ID/PW 찾기</div> | <div>회원가입</div>
+            <div css={buttonStyle}>ID/PW 찾기</div> |{" "}
+            <div css={buttonStyle} onClick={() => router.push("/register")}>
+              회원가입
+            </div>
           </div>
         </div>
       </div>
@@ -119,7 +124,7 @@ const inputStyle = css`
     color: #555555;
 
     display: flex;
-    width: 221px;
+    width: 638px;
     height: 24px;
   }
 `;
@@ -149,6 +154,10 @@ const registerButtonWrapper = css`
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+`;
+
+const buttonStyle = css`
+  cursor: pointer;
 `;
 
 export default Login;
