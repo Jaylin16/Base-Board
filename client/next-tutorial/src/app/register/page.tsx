@@ -3,18 +3,16 @@ import { css } from "@emotion/react";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomCheckbox from "@/component/common/CustomCheckbox";
-import { useUpdateSignUp } from "@/api/user/useSignUp";
-import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 
 const Register: React.FC = () => {
   const router = useRouter();
   const [checked, setChecked] = useState(false);
   const [params, setParams] = useState<{
-    nickName: string;
+    nickname: string;
     email: string;
     password: string;
   }>({
-    nickName: "",
+    nickname: "",
     email: "",
     password: "",
   });
@@ -22,7 +20,6 @@ const Register: React.FC = () => {
   const [checkedPassword, setCheckedPassword] = useState<string>("");
   const [emailReg, setEmailReg] = useState<boolean>(true);
   const [passwordReg, setPasswordReg] = useState<boolean>(true);
-  const [signUpSuccess, setSignUpSuccess] = useState<boolean>(false);
 
   const blurHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.name === "email") {
@@ -36,19 +33,6 @@ const Register: React.FC = () => {
     setParams({
       ...params,
       [event.target.name]: event.target.value,
-    });
-  };
-
-  const updateSignUp = useUpdateSignUp();
-
-  const submitHandler = () => {
-    updateSignUp.mutate(params, {
-      onSuccess: (res) => {
-        setSignUpSuccess(true);
-      },
-      onError: (err) => {
-        alert("회원가입에 실패했습니다.");
-      },
     });
   };
 
@@ -71,7 +55,7 @@ const Register: React.FC = () => {
                 css={inputStyle(true)}
                 placeholder="닉네임"
                 type="text"
-                name="nickName"
+                name="nickname"
                 onChange={inputHandler}
               />
 
@@ -123,7 +107,7 @@ const Register: React.FC = () => {
               </div>
               <button
                 css={registerButton(
-                  params.nickName.length > 1 &&
+                  params.nickname.length > 1 &&
                     params.email.length > 1 &&
                     params.password.length > 1 &&
                     checkedPassword === params.password &&
@@ -131,12 +115,11 @@ const Register: React.FC = () => {
                     passwordReg
                 )}
                 disabled={
-                  params.nickName.length < 1 &&
+                  params.nickname.length < 1 &&
                   params.email.length < 1 &&
                   params.password.length < 1 &&
                   checkedPassword !== params.password
                 }
-                onClick={submitHandler}
               >
                 회원가입
               </button>
@@ -151,29 +134,6 @@ const Register: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <Dialog
-        open={signUpSuccess}
-        onClose={() => {
-          setSignUpSuccess(false);
-        }}
-        sx={{
-          "& .MuiDialog-paper": {
-            borderRadius: "16px",
-            padding: "14px",
-            textAlign: "center",
-            width: "250px",
-            height: "150px",
-          },
-        }}
-      >
-        <div css={modalWrapper}>
-          <p>회원가입에 성공했습니다.</p>
-          <button className="modalButton" onClick={() => router.push("/login")}>
-            로그인
-          </button>
-        </div>
-      </Dialog>
     </>
   );
 };
@@ -301,30 +261,6 @@ const passwordCheckStyle = (checkedPassword: boolean) => css`
   color: #555555;
   margin-left: 17px;
   visibility: ${!checkedPassword && "hidden"};
-`;
-
-const modalWrapper = css`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 50px;
-
-  .modalButton {
-    background: #517dbf;
-    padding: 5px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-  }
-
-  p {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 `;
 
 export default Register;
