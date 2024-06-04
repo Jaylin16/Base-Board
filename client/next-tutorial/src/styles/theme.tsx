@@ -1,5 +1,5 @@
-import { Theme } from "@emotion/react";
+import { createTheme } from "@mui/material/styles";
 
-const baseTheme: Theme = {};
+const theme = createTheme({});
 
-export default baseTheme;
+export default theme;

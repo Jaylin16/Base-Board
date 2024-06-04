@@ -50,12 +50,22 @@ const Header = () => {
               <Image src={searchIcon} alt="search" />
             </button>
           </div>
-          <div
+          {localStorage.getItem("nickName") ? (
+            <div>{localStorage.getItem("nickName")} </div>
+          ) : (
+            <div
+              css={loginStyles(pathname.includes("login"))}
+              onClick={() => router.push("/login")}
+            >
+              로그인
+            </div>
+          )}
+          {/* <div
             css={loginStyles(pathname.includes("login"))}
             onClick={() => router.push("/login")}
           >
             로그인
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

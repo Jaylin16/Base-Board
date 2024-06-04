@@ -1,13 +1,66 @@
 "use client";
 import { css } from "@emotion/react";
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import CustomCheckbox from "@/component/common/CustomCheckbox";
+import { useUpdateLogin } from "@/api/user/useLogin";
 
 const Login: React.FC = () => {
+  const router = useRouter();
   const [checked, setChecked] = useState(false);
+  const [emailFilled, setEmailFilled] = useState(false);
+  const [passwordFilled, setPasswordFilled] = useState(false);
+  const [params, setParams] = useState<{
+    email: string;
+    password: string;
+  }>({
+    email: "",
+    password: "",
+  });
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
+  };
+
+  const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    setParams({
+      ...params,
+      [name]: value,
+    });
+
+    if (name === "email") {
+      if (emailRegex.test(params.email)) {
+        setEmailFilled(true);
+      } else {
+        setEmailFilled(false);
+      }
+    }
+
+    if (name === "password") {
+      if (value.length > 8) {
+        setPasswordFilled(true);
+      } else {
+        setPasswordFilled(false);
+      }
+    }
+  };
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const updateLogin = useUpdateLogin();
+
+  const submitHandler = () => {
+    updateLogin.mutate(params, {
+      onSuccess: (res) => {
+        localStorage.setItem("nickName", res.data.userName);
+        router.push("/");
+      },
+      onError: (err) => {
+        alert("로그인 실패");
+      },
+    });
   };
 
   return (
@@ -22,9 +75,17 @@ const Login: React.FC = () => {
                 css={inputStyle}
                 placeholder="아이디(이메일 입력)"
                 type="text"
+                name="email"
+                onChange={inputHandler}
               />
 
-              <input css={inputStyle} placeholder="비밀번호" type="password" />
+              <input
+                css={inputStyle}
+                placeholder="비밀번호"
+                type="password"
+                name="password"
+                onChange={inputHandler}
+              />
             </div>
 
             <div css={loginButtonWrapper}>
@@ -35,12 +96,21 @@ const Login: React.FC = () => {
                   label="로그인 유지"
                 />
               </div>
-              <div css={loginButton}>로그인</div>
+              <button
+                css={loginButton(emailFilled && passwordFilled)}
+                disabled={emailFilled && passwordFilled}
+                onClick={submitHandler}
+              >
+                로그인
+              </button>
             </div>
           </div>
 
           <div css={registerButtonWrapper}>
-            <div>ID/PW 찾기</div> | <div>회원가입</div>
+            <div css={buttonStyle}>ID/PW 찾기</div> |{" "}
+            <div css={buttonStyle} onClick={() => router.push("/register")}>
+              회원가입
+            </div>
           </div>
         </div>
       </div>
@@ -92,18 +162,18 @@ const loginStyle = css`
   align-items: center;
 `;
 
-const loginButton = css`
-  width: 109px;
-  height: 35px;
+const loginButton = (isActive: boolean) => css`
   border-radius: 5px;
-  background: #7d9dcf;
+  background: ${isActive ? "#7d9dcf" : "#999999"};
   color: #ffffff;
+  font-size: 18px;
+  padding: 6px 25px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  cursor: pointer;
+  cursor: ${isActive && "pointer"};
 `;
 
 const inputStyle = css`
@@ -119,7 +189,7 @@ const inputStyle = css`
     color: #555555;
 
     display: flex;
-    width: 221px;
+    width: 638px;
     height: 24px;
   }
 `;
@@ -149,6 +219,10 @@ const registerButtonWrapper = css`
   justify-content: flex-end;
   align-items: center;
   gap: 10px;
+`;
+
+const buttonStyle = css`
+  cursor: pointer;
 `;
 
 export default Login;
