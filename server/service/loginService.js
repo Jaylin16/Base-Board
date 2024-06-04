@@ -27,7 +27,7 @@ const userLogin = async (req, res) => {
 
     // 이메일이 없다면 메세지 발송
     if (!userInfo) {
-      return res.json({
+      return res.status(400).json({
         loginSuccess: false,
         message: "해당하는 유저가 없습니다.",
       });
@@ -37,7 +37,7 @@ const userLogin = async (req, res) => {
     const isMatch = await userInfo.passwordCheck(req.body.password);
 
     if (!isMatch) {
-      return res.json({
+      return res.status(400).json({
         loginSuccess: false,
         message: "비밀번호가 일치하지 않습니다.",
       });
@@ -58,7 +58,7 @@ const userLogin = async (req, res) => {
       .status(200)
       .json({
         loginSuccess: true,
-        message: `user: ${userInfoWithToken.nickName} 님에게 토큰이 생성되었습니다.`,
+        userName: `${userInfoWithToken.nickName}`,
       });
   } catch (err) {
     res.json({ loginSuccess: false, message: "로그인에 실패했습니다." });
