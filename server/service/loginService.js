@@ -48,8 +48,8 @@ const userLogin = async (req, res) => {
 
     const cookieOptions = {
       // httpOnly: true,
-      // maxAge: 1000 * 60 * 60 * 24, //1일
-      maxAge: 1000 * 60 * 5, //5분
+      maxAge: 1000 * 60 * 60 * 24, //1일
+      // maxAge: 1000 * 60 * 5, //5분
     };
 
     // 토큰을 저장해줌. (쿠키 방식)
