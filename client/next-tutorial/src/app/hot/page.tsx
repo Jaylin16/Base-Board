@@ -1,30 +1,21 @@
 "use client";
+import { useGetBoardList } from "@/api/board/useBoardApi";
 import { css } from "@emotion/react";
 
 const Hot = () => {
-  const content = [
-    {
-      no: 1,
-      category: "SSG",
-      title: "제목제목제목",
-      date: "24.05.14",
-      hit: 8100,
-    },
-    {
-      no: 2,
-      category: "SSG",
-      title: "제목제목제목",
-      date: "날짜날짜",
-      hit: 234,
-    },
-    {
-      no: 3,
-      category: "SSG",
-      title: "제목제목제목",
-      date: "24.05.30",
-      hit: 12345,
-    },
-  ];
+  const { data } = useGetBoardList("hot");
+
+  const formatDate = (date: Date) => {
+    const newDate = new Date(date);
+
+    const options: Intl.DateTimeFormatOptions = {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+    };
+
+    return new Intl.DateTimeFormat("ko", options).format(newDate);
+  };
 
   return (
     <>
@@ -44,20 +35,25 @@ const Hot = () => {
           </div>
 
           <div>
-            {content.map((content, index, value) => {
-              return (
-                <div
-                  css={lineStyle(index + 1 === value.length)}
-                  key={content.no}
-                >
-                  <span className="noStyle"> {content.no} </span>
-                  <span className="categoryStyle"> {content.category} </span>
-                  <span className="titleStyle"> {content.title} </span>
-                  <span className="dateStyle"> {content.date} </span>
-                  <span className="hitStyle"> {content.hit} </span>
-                </div>
-              );
-            })}
+            {data &&
+              data?.map((content: any, index: number, value: string) => {
+                return (
+                  <div
+                    css={lineStyle(index + 1 === value.length)}
+                    key={content._id}
+                  >
+                    <span className="noStyle"> {content.boardId} </span>
+                    <span className="categoryStyle">
+                      {content.boardCategory}
+                    </span>
+                    <span className="titleStyle"> {content.boardTitle} </span>
+                    <span className="dateStyle">
+                      {formatDate(content.createdAt)}
+                    </span>
+                    <span className="hitStyle"> {content.hit} </span>
+                  </div>
+                );
+              })}
           </div>
         </div>
 

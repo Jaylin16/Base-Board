@@ -8,24 +8,42 @@ const createBoard = async (req, res) => {
   const body = req.body;
 
   const board = new Board({
+    boardType: body.type,
+    boardCategory: body.category,
     boardWriterId: userId,
     boardWriterNickname: userNickname,
     boardTitle: body.boardTitle,
     boardContents: body.boardContents,
   });
 
-  await board.save().then(() => {
-    res.json({
-      boardWriteSuccess: true,
-      message: `${userNickname} 님이 작성하신 게시물이 저장되었습니다.`,
+  try {
+    await board.save().then(() => {
+      res.status(200).json({
+        boardWriteSuccess: true,
+        message: `${userNickname} 님이 작성하신 게시물이 저장되었습니다.`,
+      });
     });
-  });
+  } catch (err) {
+    res.status(400).json({
+      boardWriteSuccess: false,
+      message: `${userNickname} 님이 작성하신 게시물 저장에 실패했습니다.`,
+    });
+  }
 };
 
 //게시물 리스트 불러오기
 const getBoardList = async (req, res) => {
   try {
-    const boardList = await Board.find();
+    const { type } = req.query;
+
+    let boardList;
+
+    if (type === "전체") {
+      boardList = await Board.find();
+    } else {
+      const board = new Board();
+      boardList = await board.findAllByType(type);
+    }
 
     return res.send(boardList);
   } catch (err) {
@@ -42,6 +60,8 @@ const getBoardDetail = async (req, res) => {
 
     const board = new Board();
     const targetBoard = await board.findDetailBoard(boardId);
+
+    await Board.findByIdAndUpdate(boardId, { hit: targetBoard.hit + 1 });
 
     return res.json({
       targetBoard: targetBoard,
