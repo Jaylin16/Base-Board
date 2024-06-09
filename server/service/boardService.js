@@ -35,9 +35,15 @@ const createBoard = async (req, res) => {
 const getBoardList = async (req, res) => {
   try {
     const { type } = req.query;
-    const board = new Board();
 
-    const boardList = await board.findAllByType(type);
+    let boardList;
+
+    if (type === "전체") {
+      boardList = await Board.find();
+    } else {
+      const board = new Board();
+      boardList = await board.findAllByType(type);
+    }
 
     return res.send(boardList);
   } catch (err) {
