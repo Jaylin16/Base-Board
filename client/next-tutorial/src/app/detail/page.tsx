@@ -33,25 +33,31 @@ const DetailPage = ({ id }: { id: string }) => {
     <>
       <div css={rootStyle}>
         <div css={boardTitleStyle}>
-          📝 {content.boardType.toUpperCase()} 게시판
+          📝 {content?.boardType.toUpperCase()} 게시판
           <div css={fristLineStyle}>
             <div css={titleWrapper}>
               <span>{content?.boardCategory}</span>
-              <span>제목 {content?.boardTitle}</span>
+              <span>{content?.boardTitle}</span>
             </div>
 
             <div css={hitWrapper}>
-              <span>👀 hit 수 {content.hit}</span>
+              <span>👀 hit 수 {content?.hit}</span>
               <span>💬 댓글 수</span>
             </div>
           </div>
           <div css={secondLineStyle}>
-            <div>작성자: {content.boardWriterNickname}</div>
-            <div>작성 일자: {formatDate(content.createdAt)}</div>
+            <div>작성자: {content?.boardWriterNickname}</div>
+            <div>작성 일자: {formatDate(content?.createdAt)}</div>
           </div>
         </div>
 
-        <div css={contentBoxStyle}>{content.boardContents}</div>
+        <div css={contentBoxStyle}>
+          <iframe
+            css={iframeStyle}
+            srcDoc={content?.boardContents}
+            title="Board Content HTML"
+          />
+        </div>
 
         <div>
           <div css={totalCommentStyle}>💬 총 댓글수</div>
@@ -172,4 +178,10 @@ const commentInputWrapper = css`
 
 const commentContentStyle = css`
   padding-top: 23px;
+`;
+
+const iframeStyle = css`
+  width: 100%;
+  height: 100%;
+  border: transparent;
 `;
