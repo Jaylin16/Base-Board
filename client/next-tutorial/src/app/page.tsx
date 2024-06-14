@@ -40,7 +40,7 @@ const Home = () => {
                 💡 실시간 🇰🇷 KBO
                 {content.map((content) => {
                   return (
-                    <div className={"textArea"}>
+                    <div className={"textArea"} key={content.no}>
                       <p> {content.title} </p>
                     </div>
                   );
