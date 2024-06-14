@@ -61,7 +61,16 @@ const getBoardDetail = async (req, res) => {
     const board = new Board();
     const targetBoard = await board.findDetailBoard(boardId);
 
-    await Board.findByIdAndUpdate(boardId, { hit: targetBoard.hit + 1 });
+    //한개의 게시물 메모리 크기 확인을 위한 코드
+    const targetBoardSize = Buffer.byteLength(
+      JSON.stringify(targetBoard),
+      "utf8"
+    );
+    console.log("targetBoardSize====>", `${targetBoardSize} byte`);
+
+    await Board.findByIdAndUpdate(targetBoard._id, {
+      hit: targetBoard.hit + 1,
+    });
 
     return res.json({
       targetBoard: targetBoard,
@@ -97,13 +106,39 @@ const editBoard = async (req, res) => {
 
 //게시물 삭제
 const deleteBoard = async (req, res) => {
-  const boardId = req.params.boardId;
+  try {
+    const user = req.user;
+    const boardId = req.params.boardId;
+    const board = await Board.findById(boardId);
 
-  await Board.deleteOne({ _id: boardId });
+    //해당 게시글이 DB에 있는 게시글인지 확인
+    if (!board) {
+      return res.status(404).json({
+        deleteSuccess: false,
+        message: "해당하는 게시글이 없습니다.",
+      });
+    }
 
-  return res.json({
-    message: "게시물이 삭제되었습니다.",
-  });
+    //권한이 있는 요청인지 확인
+    if (user._id.toString() !== board.boardWriterId) {
+      return res.status(403).json({
+        deleteSuccess: false,
+        message: "권한이 없는 요청입니다.",
+      });
+    }
+
+    await board.deleteOne();
+
+    return res.status(200).json({
+      deleteSuccess: true,
+      message: "게시물이 삭제되었습니다.",
+    });
+  } catch (err) {
+    return res.status(500).json({
+      deleteSuccess: false,
+      message: "게시물 삭제에 실패했습니다.",
+    });
+  }
 };
 
 module.exports = {

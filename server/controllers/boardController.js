@@ -9,7 +9,7 @@ const boardController = express.Router();
 boardController.post("/write", auth, boardService.createBoard);
 
 //게시물 리스트 불러오기
-boardController.get("/list", auth, boardService.getBoardList);
+boardController.get("/list", boardService.getBoardList);
 
 //게시물 상세 불러오기
 boardController.get("/:boardId", auth, boardService.getBoardDetail);
