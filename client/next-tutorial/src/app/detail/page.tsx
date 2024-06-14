@@ -2,16 +2,11 @@
 
 import { useGetBoardDetail } from "@/api/board/useBoardApi";
 import { css } from "@emotion/react";
-import { useEffect } from "react";
 
 const DetailPage = ({ id }: { id: string }) => {
   const { data, isLoading } = useGetBoardDetail(id);
 
   const content = data && data.targetBoard;
-
-  useEffect(() => {
-    console.log("Data===>", data);
-  }, [data]);
 
   const formatDate = (date: Date) => {
     const newDate = new Date(date);

@@ -16,8 +16,13 @@ const Write = ({ type }: { type?: string }) => {
   const editorRef = useRef<null | Editor>(null);
 
   useEffect(() => {
+    const editorElement = document.querySelector("#editor") as HTMLElement;
+    if (!editorElement) {
+      console.error("Editor element not found");
+    }
+
     editorRef.current = new Editor({
-      el: document.querySelector("#editor") as HTMLElement,
+      el: editorElement,
       height: "600px",
       initialEditType: "markdown",
       previewStyle: "vertical",
@@ -26,7 +31,7 @@ const Write = ({ type }: { type?: string }) => {
     });
 
     return () => {
-      if (editorRef.current) {
+      if (editorRef.current !== null) {
         editorRef.current.destroy();
         editorRef.current = null;
       }
@@ -37,7 +42,14 @@ const Write = ({ type }: { type?: string }) => {
     const html = editorRef.current?.getHTML();
 
     const data = {
-      type: type,
+      type:
+        type === "baseball"
+          ? "야구"
+          : type === "board"
+          ? "자유"
+          : type === "notice"
+          ? "공지"
+          : type,
       category: category || "카테고리",
       boardTitle: title,
       boardContents: html,
@@ -45,7 +57,6 @@ const Write = ({ type }: { type?: string }) => {
 
     postBoard.mutate(data, {
       onSuccess: (res) => {
-        console.log("res====>", res);
         router.push(`/${type}`);
       },
       onError: (err) => {
