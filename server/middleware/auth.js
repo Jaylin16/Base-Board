@@ -5,7 +5,7 @@ const auth = async (req, res, next) => {
   const token = req.cookies.auth_cookie;
 
   if (!token) {
-    return res.json({
+    return res.status(401).json({
       isAuth: false,
       message: "토큰이 없습니다.",
     });
@@ -16,7 +16,7 @@ const auth = async (req, res, next) => {
     const user = await User.findByToken(token);
 
     if (!user) {
-      return res.json({
+      return res.status(401).json({
         isAuth: false,
         message: "가입하지 않은 회원입니다.",
       });
@@ -28,7 +28,7 @@ const auth = async (req, res, next) => {
       next();
     }
   } catch (err) {
-    return res.json({
+    return res.status(401).json({
       isAuth: false,
       message: "유효한 토큰이 아닙니다.",
       detail: `${err}`,
