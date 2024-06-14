@@ -1,23 +1,61 @@
 "use client";
 
 import { useGetBoardDetail } from "@/api/board/useBoardApi";
+import { useCreateComment } from "@/api/comment/useCommentApi";
 import { css } from "@emotion/react";
+import { useState } from "react";
+
+interface commentType {
+  _id: string;
+  commentWriterId: string;
+  commentWriterNickname: string;
+  commentContent: string;
+  createdAt: Date;
+}
 
 const DetailPage = ({ id }: { id: string }) => {
   const { data, isLoading } = useGetBoardDetail(id);
+  const [commentContent, setCommentContent] = useState<string>();
 
-  const content = data && data.targetBoard;
+  const createComment = useCreateComment();
 
-  const formatDate = (date: Date) => {
+  const content = data?.targetBoard;
+
+  const boardIntlOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  };
+
+  const commentIntlOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  };
+
+  const formatDate = (date: Date, IntlOption: Intl.DateTimeFormatOptions) => {
     const newDate = new Date(date);
+    return new Intl.DateTimeFormat("ko", IntlOption).format(newDate);
+  };
 
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
+  const submitHandler = () => {
+    const data = {
+      commentContent: commentContent,
+      boardId: id,
     };
 
-    return new Intl.DateTimeFormat("ko", options).format(newDate);
+    createComment.mutate(data, {
+      onSuccess: () => {
+        setCommentContent("");
+      },
+    });
+  };
+
+  const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setCommentContent(value);
   };
 
   if (isLoading) {
@@ -36,13 +74,15 @@ const DetailPage = ({ id }: { id: string }) => {
             </div>
 
             <div css={hitWrapper}>
-              <span>👀 hit 수 {content?.hit}</span>
-              <span>💬 댓글 수</span>
+              <span>👀 {content?.hit}</span>
+              <span>💬 {content?.comments.length}</span>
             </div>
           </div>
           <div css={secondLineStyle}>
             <div>작성자: {content?.boardWriterNickname}</div>
-            <div>작성 일자: {formatDate(content?.createdAt)}</div>
+            <div>
+              작성 일자: {formatDate(content?.createdAt, boardIntlOptions)}
+            </div>
           </div>
         </div>
 
@@ -55,17 +95,33 @@ const DetailPage = ({ id }: { id: string }) => {
         </div>
 
         <div>
-          <div css={totalCommentStyle}>💬 총 댓글수</div>
-          <div>
-            <div css={commentStyle}>
-              <span>닉네임</span>
-              <span>일자 시간</span>
-              <div css={commentContentStyle}>댓글 내용</div>
-            </div>
-          </div>
+          <div css={totalCommentStyle}>💬 {content?.comments.length}</div>
+
+          {content?.comments?.map((comment: commentType) => {
+            return (
+              <div key={comment._id}>
+                <div css={commentStyle}>
+                  <span> {comment.commentWriterNickname} </span>
+                  <span>
+                    {formatDate(comment.createdAt, commentIntlOptions)}
+                  </span>
+                  <div css={commentContentStyle}> {comment.commentContent}</div>
+                </div>
+              </div>
+            );
+          })}
+
           <div css={commentInputWrapper}>
-            <input type="text" placeholder="댓글을 입력해주세요." />
-            <button css={commentButton}>댓글 등록</button>
+            <input
+              type="text"
+              placeholder="댓글을 입력해주세요."
+              name="commentContent"
+              value={commentContent}
+              onChange={inputHandler}
+            />
+            <button css={commentButton} onClick={submitHandler}>
+              댓글 등록
+            </button>
           </div>
         </div>
       </div>
@@ -148,6 +204,8 @@ const commentButton = css`
   width: 155.71px;
   border-radius: 5px;
   padding: 7.14px 30px;
+
+  cursor: pointer;
 `;
 
 const commentInputWrapper = css`
