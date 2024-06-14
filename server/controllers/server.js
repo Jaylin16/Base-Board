@@ -9,6 +9,7 @@ const config = require("../config/key");
 
 const { loginController } = require("../controllers/loginController");
 const { boardController } = require("../controllers/boardController");
+const { commentController } = require("../controllers/commentController");
 
 app.listen(port, () => {
   console.log(`${port}서버에 연결되었습니다.`);
@@ -18,6 +19,9 @@ mongoose
   .connect(config.mongoURI)
   .then(() => console.log("MongoDB가 연결되었습니다."))
   .catch((error) => console.log(error));
+
+//쿼리 확인을 위한 디버그 옵션 설정
+mongoose.set("debug", true);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -32,7 +36,4 @@ app.use(
 
 app.use("/", loginController);
 app.use("/board", boardController);
-
-app.get("/hello", (req, res) => {
-  return res.send("Hello");
-});
+app.use("/comment", commentController);
