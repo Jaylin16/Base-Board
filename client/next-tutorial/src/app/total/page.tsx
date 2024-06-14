@@ -1,9 +1,13 @@
 "use client";
 import { useGetBoardList } from "@/api/board/useBoardApi";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { css } from "@emotion/react";
 
 const Total = () => {
   const { data } = useGetBoardList("전체");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const formatDate = (date: Date) => {
     const newDate = new Date(date);
@@ -15,6 +19,19 @@ const Total = () => {
     };
 
     return new Intl.DateTimeFormat("ko", options).format(newDate);
+  };
+
+  const onClickDetailButton = (id: string) => {
+    const currentParmas = Object.fromEntries(searchParams);
+    let newSearchParmas = { ...currentParmas };
+    newSearchParmas = {
+      ...currentParmas,
+      main: `${pathname.slice(1)}`,
+      page: `detail`,
+      item_id: id,
+    };
+
+    router.push(`?${new URLSearchParams(newSearchParmas)}`);
   };
 
   return (
@@ -40,6 +57,7 @@ const Total = () => {
                   <div
                     css={lineStyle(index + 1 === value.length)}
                     key={content._id}
+                    onClick={() => onClickDetailButton(content._id)}
                   >
                     <span className="noStyle">{content.boardId}</span>
 

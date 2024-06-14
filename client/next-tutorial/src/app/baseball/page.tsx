@@ -1,9 +1,13 @@
 "use client";
 import { useGetBoardList } from "@/api/board/useBoardApi";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { css } from "@emotion/react";
 
 const Baseball = () => {
   const { data } = useGetBoardList("야구");
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   const formatDate = (date: Date) => {
     const newDate = new Date(date);
@@ -17,12 +21,39 @@ const Baseball = () => {
     return new Intl.DateTimeFormat("ko", options).format(newDate);
   };
 
+  const onClickWriteButton = () => {
+    const currentParmas = Object.fromEntries(searchParams);
+    let newSearchParmas = { ...currentParmas };
+    newSearchParmas = {
+      ...currentParmas,
+      main: `${pathname.slice(1)}`,
+      page: `write`,
+    };
+
+    router.push(`?${new URLSearchParams(newSearchParmas)}`);
+  };
+
+  const onClickDetailButton = (id: string) => {
+    const currentParmas = Object.fromEntries(searchParams);
+    let newSearchParmas = { ...currentParmas };
+    newSearchParmas = {
+      ...currentParmas,
+      main: `${pathname.slice(1)}`,
+      page: `detail`,
+      item_id: id,
+    };
+
+    router.push(`?${new URLSearchParams(newSearchParmas)}`);
+  };
+
   return (
     <>
       <div css={rootStyle}>
         <div css={titleWrapper}>
           <div css={titleStyle}> ⚾️ 야구 게시판 </div>
-          <div css={writeButton}> ✏️ 글 작성 </div>
+          <div css={writeButton} onClick={onClickWriteButton}>
+            ✏️ 글 작성
+          </div>
         </div>
 
         <div>
@@ -41,6 +72,7 @@ const Baseball = () => {
                   <div
                     css={lineStyle(index + 1 === value.length)}
                     key={content._id}
+                    onClick={() => onClickDetailButton(content._id)}
                   >
                     <span className="noStyle"> {content.boardId} </span>
                     <span className="categoryStyle">

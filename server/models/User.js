@@ -5,9 +5,6 @@ const jwt = require("jsonwebtoken");
 
 const config = require("../config/key");
 
-//쿼리 확인을 위한 디버그 옵션 설정
-mongoose.set("debug", true);
-
 const userSchema = mongoose.Schema({
   name: {
     type: String,
