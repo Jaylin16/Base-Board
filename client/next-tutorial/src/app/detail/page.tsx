@@ -87,11 +87,9 @@ const DetailPage = ({ id }: { id: string }) => {
         </div>
 
         <div css={contentBoxStyle}>
-          <iframe
-            css={iframeStyle}
-            srcDoc={content?.boardContents}
-            title="Board Content HTML"
-          />
+          <div
+            dangerouslySetInnerHTML={{ __html: content.boardContents }}
+          ></div>
         </div>
 
         <div>
@@ -172,7 +170,7 @@ const secondLineStyle = css`
 `;
 
 const contentBoxStyle = css`
-  height: 766px;
+  min-height: 500px;
   padding: 50px 30px;
 `;
 
@@ -231,10 +229,4 @@ const commentInputWrapper = css`
 
 const commentContentStyle = css`
   padding-top: 23px;
-`;
-
-const iframeStyle = css`
-  width: 100%;
-  height: 100%;
-  border: transparent;
 `;
