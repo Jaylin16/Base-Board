@@ -181,7 +181,6 @@ const totalCommentStyle = css`
 
 const commentStyle = css`
   border-bottom: 1px solid #d9d9d9;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 13px 17px 34px 17px;
 
   span {
