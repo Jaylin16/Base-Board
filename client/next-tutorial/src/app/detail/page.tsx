@@ -1,7 +1,11 @@
 "use client";
 
 import { useGetBoardDetail } from "@/api/board/useBoardApi";
-import { useCreateComment } from "@/api/comment/useCommentApi";
+import {
+  useCreateComment,
+  useDeleteComment,
+  useUpdateComment,
+} from "@/api/comment/useCommentApi";
 import { css } from "@emotion/react";
 import { useState } from "react";
 
@@ -13,11 +17,16 @@ interface commentType {
   createdAt: Date;
 }
 
-const DetailPage = ({ id }: { id: string }) => {
-  const { data, isLoading } = useGetBoardDetail(id);
+const DetailPage = ({ boardId }: { boardId: string }) => {
   const [commentContent, setCommentContent] = useState<string>();
+  const [editCommentId, setEditCommentId] = useState<string | null>(null);
+  const [editComment, setEditComment] = useState<string>();
+
+  const { data, isLoading } = useGetBoardDetail(boardId);
 
   const createComment = useCreateComment();
+  const updateComment = useUpdateComment();
+  const deleteComment = useDeleteComment();
 
   const content = data?.targetBoard;
 
@@ -40,10 +49,24 @@ const DetailPage = ({ id }: { id: string }) => {
     return new Intl.DateTimeFormat("ko", IntlOption).format(newDate);
   };
 
-  const submitHandler = () => {
+  /* 여기부터 이벤트 핸들러 모음 입니다. */
+
+  const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setCommentContent(value);
+  };
+
+  const commentEditHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setEditComment(value);
+  };
+
+  /* 여기부터 버튼 핸들러 모음 입니다. */
+
+  const submitButtonHandler = () => {
     const data = {
       commentContent: commentContent,
-      boardId: id,
+      boardId: boardId,
     };
 
     createComment.mutate(data, {
@@ -53,9 +76,30 @@ const DetailPage = ({ id }: { id: string }) => {
     });
   };
 
-  const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = event.target;
-    setCommentContent(value);
+  const editButtonHandler = (commentId: string, commentContent: string) => {
+    if (editCommentId === null) {
+      setEditCommentId(commentId);
+      setEditComment(commentContent);
+    } else {
+      setEditCommentId(null);
+    }
+  };
+
+  const saveEditCommentButtonHandler = (commentId: string) => {
+    const data = {
+      commentId: commentId,
+      commentContent: editComment,
+    };
+
+    updateComment.mutate(data, {
+      onSuccess: () => {
+        setEditCommentId(null);
+      },
+    });
+  };
+
+  const deleteButtonHandler = (commentId: string) => {
+    deleteComment.mutate(commentId);
   };
 
   if (isLoading) {
@@ -103,7 +147,43 @@ const DetailPage = ({ id }: { id: string }) => {
                   <span>
                     {formatDate(comment.createdAt, commentIntlOptions)}
                   </span>
-                  <div css={commentContentStyle}> {comment.commentContent}</div>
+
+                  <button
+                    css={commentEditButtonStyle}
+                    onClick={() => {
+                      editButtonHandler(comment._id, comment.commentContent);
+                    }}
+                  >
+                    {comment._id === editCommentId ? "취소" : "수정"}
+                  </button>
+
+                  <button
+                    css={saveButtonStyle(editCommentId, comment._id)}
+                    onClick={() => {
+                      saveEditCommentButtonHandler(comment._id);
+                    }}
+                  >
+                    {"저장"}
+                  </button>
+
+                  <button
+                    css={commentEditButtonStyle}
+                    onClick={() => {
+                      deleteButtonHandler(comment._id);
+                    }}
+                  >
+                    삭제
+                  </button>
+
+                  <div css={commentContentStyle(editCommentId, comment._id)}>
+                    <div className="originText">{comment.commentContent}</div>
+                    <input
+                      name="editTextBox"
+                      type="text"
+                      value={editComment}
+                      onChange={commentEditHandler}
+                    />
+                  </div>
                 </div>
               </div>
             );
@@ -117,7 +197,7 @@ const DetailPage = ({ id }: { id: string }) => {
               value={commentContent}
               onChange={inputHandler}
             />
-            <button css={commentButton} onClick={submitHandler}>
+            <button css={commentButton} onClick={submitButtonHandler}>
               댓글 등록
             </button>
           </div>
@@ -194,6 +274,23 @@ const commentStyle = css`
   }
 `;
 
+const commentEditButtonStyle = css`
+  margin: 0 5px;
+
+  color: #999999;
+  cursor: pointer;
+`;
+
+const saveButtonStyle = (
+  commentEditMode: string | null,
+  commentId: string
+) => css`
+  display: ${commentEditMode !== commentId && "none"};
+
+  color: #999999;
+  cursor: pointer;
+`;
+
 const commentButton = css`
   background: #7d9dcf;
   font-size: 18px;
@@ -226,6 +323,19 @@ const commentInputWrapper = css`
   }
 `;
 
-const commentContentStyle = css`
-  padding-top: 23px;
-`;
+const commentContentStyle = (editCommentId: string | null, commentId: string) =>
+  css`
+    padding-top: 23px;
+    font-size: 18px;
+
+    .originText {
+      display: ${commentId === editCommentId && "none"};
+    }
+
+    input {
+      display: ${commentId !== editCommentId && "none"};
+      font-size: 18px;
+      width: 100%;
+      height: 100%;
+    }
+  `;
