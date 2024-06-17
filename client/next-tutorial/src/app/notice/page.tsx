@@ -2,12 +2,17 @@
 import { useGetBoardList } from "@/api/board/useBoardApi";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { css } from "@emotion/react";
+import { useEffect, useState } from "react";
+import { Pagination, PaginationItem } from "@mui/material";
 
 const Notice = () => {
-  const { data } = useGetBoardList("공지");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const pageSize = 10;
+  const [page, setPage] = useState<number>(1);
+  const { data, refetch } = useGetBoardList("공지", page, pageSize);
 
   const formatDate = (date: Date) => {
     const newDate = new Date(date);
@@ -19,6 +24,14 @@ const Notice = () => {
     };
 
     return new Intl.DateTimeFormat("ko", options).format(newDate);
+  };
+
+  useEffect(() => {
+    refetch();
+  }, [page]);
+
+  const onPageChange = (event: React.ChangeEvent<any>, newPage: number) => {
+    setPage(newPage);
   };
 
   const onClickWriteButton = () => {
@@ -67,32 +80,47 @@ const Notice = () => {
 
           <div>
             {data &&
-              data?.map((content: any, index: number, value: string) => {
-                return (
-                  <div
-                    css={lineStyle(index + 1 === value.length)}
-                    key={content._id}
-                    onClick={() => {
-                      onClickDetailButton(content._id);
-                    }}
-                  >
-                    <span className="noStyle"> {content.boardId} </span>
-                    <span className="categoryStyle">
-                      {content.boardCategory}
-                    </span>
-                    <span className="titleStyle"> {content.boardTitle} </span>
-                    <span className="dateStyle">
-                      {formatDate(content.createdAt)}
-                    </span>
-                    <span className="hitStyle"> {content.hit} </span>
-                  </div>
-                );
-              })}
+              data?.boardList?.map(
+                (content: any, index: number, value: string) => {
+                  return (
+                    <div
+                      css={lineStyle(index + 1 === value.length)}
+                      key={content._id}
+                      onClick={() => {
+                        onClickDetailButton(content._id);
+                      }}
+                    >
+                      <span className="noStyle"> {content.boardId} </span>
+                      <span className="categoryStyle">
+                        {content.boardCategory}
+                      </span>
+                      <span className="titleStyle"> {content.boardTitle} </span>
+                      <span className="dateStyle">
+                        {formatDate(content.createdAt)}
+                      </span>
+                      <span className="hitStyle"> {content.hit} </span>
+                    </div>
+                  );
+                }
+              )}
           </div>
         </div>
 
         <div css={pageWrapper}>
-          {"<"} 1 2 3 4 5 {">"}
+          <Pagination
+            count={data?.totalPages}
+            page={page}
+            onChange={onPageChange}
+            size="medium"
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              padding: "15px 0",
+            }}
+            renderItem={(item) => (
+              <PaginationItem {...item} sx={{ fontSize: 12 }} />
+            )}
+          />
         </div>
       </div>
     </>
