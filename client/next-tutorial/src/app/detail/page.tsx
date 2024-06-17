@@ -176,13 +176,16 @@ const DetailPage = ({ boardId }: { boardId: string }) => {
                   </button>
 
                   <div css={commentContentStyle(editCommentId, comment._id)}>
-                    <div className="originText">{comment.commentContent}</div>
-                    <input
-                      name="editTextBox"
-                      type="text"
-                      value={editComment}
-                      onChange={commentEditHandler}
-                    />
+                    {comment._id !== editCommentId ? (
+                      <div> {comment.commentContent} </div>
+                    ) : (
+                      <input
+                        name="editTextBox"
+                        type="text"
+                        value={editComment}
+                        onChange={commentEditHandler}
+                      />
+                    )}
                   </div>
                 </div>
               </div>
@@ -328,12 +331,7 @@ const commentContentStyle = (editCommentId: string | null, commentId: string) =>
     padding-top: 23px;
     font-size: 18px;
 
-    .originText {
-      display: ${commentId === editCommentId && "none"};
-    }
-
     input {
-      display: ${commentId !== editCommentId && "none"};
       font-size: 18px;
       width: 100%;
       height: 100%;
