@@ -80,7 +80,7 @@ const Total = () => {
                         {content.boardCategory}
                       </span>
 
-                      <span className="titleStyle">{content.boardTitle}</span>
+                      <span css={listTitleStyle}> {content.boardTitle} </span>
 
                       <span className="dateStyle">
                         {formatDate(content.createdAt)}
@@ -207,13 +207,6 @@ const lineStyle = (isLast: boolean) => css`
     justify-content: center;
   }
 
-  .titleStyle {
-    width: 63%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
   .dateStyle {
     width: 10%;
     display: flex;
@@ -227,6 +220,15 @@ const lineStyle = (isLast: boolean) => css`
     align-items: center;
     justify-content: center;
   }
+`;
+
+const listTitleStyle = css`
+  width: 63%;
+  justify-content: flex-start;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 `;
 
 const pageWrapper = css`
