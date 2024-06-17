@@ -78,16 +78,6 @@ boardSchema.methods.findDetailBoard = async function (boardId) {
   }
 };
 
-boardSchema.methods.findAllByType = async function (type) {
-  try {
-    const boardList = await Board.find({ boardType: type });
-
-    return boardList;
-  } catch (err) {
-    throw err;
-  }
-};
-
 //게시물 삭제시 관련 댓글 모두 삭제
 boardSchema.pre(
   "deleteOne",

@@ -34,18 +34,31 @@ const createBoard = async (req, res) => {
 //게시물 리스트 불러오기
 const getBoardList = async (req, res) => {
   try {
-    const { type } = req.query;
+    const { type, page = 1, pageSize = 10 } = req.query;
 
     let boardList;
+    let totalBoards;
+    let totalPages;
 
     if (type === "전체") {
-      boardList = await Board.find();
+      boardList = await Board.find()
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .sort({ createdAt: -1 });
+
+      totalBoards = await Board.countDocuments();
+      totalPages = Math.ceil(totalBoards / pageSize);
     } else {
-      const board = new Board();
-      boardList = await board.findAllByType(type);
+      boardList = await Board.find({ boardType: type })
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .sort({ createdAt: -1 });
+
+      totalBoards = await Board.countDocuments({ boardType: type });
+      totalPages = Math.ceil(totalBoards / pageSize);
     }
 
-    return res.send(boardList);
+    return res.send({ boardList, totalPages, totalBoards, currentPage: page });
   } catch (err) {
     return res.json({
       message: "리스트를 불러오는데 실패했습니다.",
