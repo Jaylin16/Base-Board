@@ -2,12 +2,17 @@
 import { useGetBoardList } from "@/api/board/useBoardApi";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { css } from "@emotion/react";
+import { useEffect, useState } from "react";
+import { Pagination, PaginationItem } from "@mui/material";
 
 const Total = () => {
-  const { data } = useGetBoardList("전체");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const pageSize = 10;
+  const [page, setPage] = useState<number>(1);
+  const { data, refetch } = useGetBoardList("전체", page, pageSize);
 
   const formatDate = (date: Date) => {
     const newDate = new Date(date);
@@ -19,6 +24,14 @@ const Total = () => {
     };
 
     return new Intl.DateTimeFormat("ko", options).format(newDate);
+  };
+
+  useEffect(() => {
+    refetch();
+  }, [page]);
+
+  const onPageChange = (event: React.ChangeEvent<any>, newPage: number) => {
+    setPage(newPage);
   };
 
   const onClickDetailButton = (id: string) => {
@@ -52,40 +65,57 @@ const Total = () => {
           </div>
           <div>
             {data &&
-              data?.map((content: any, index: number, value: string) => {
-                return (
-                  <div
-                    css={lineStyle(index + 1 === value.length)}
-                    key={content._id}
-                    onClick={() => onClickDetailButton(content._id)}
-                  >
-                    <span className="noStyle">{content.boardId}</span>
+              data?.boardList?.map(
+                (content: any, index: number, value: string) => {
+                  return (
+                    <div
+                      css={lineStyle(index + 1 === value.length)}
+                      key={content._id}
+                      onClick={() => onClickDetailButton(content._id)}
+                    >
+                      <span className="noStyle">{content.boardId}</span>
 
-                    <span className="categoryStyle">
-                      {content.boardType.toUpperCase()} /{" "}
-                      {content.boardCategory}
-                    </span>
+                      <span className="categoryStyle">
+                        {content.boardType.toUpperCase()} /{" "}
+                        {content.boardCategory}
+                      </span>
 
-                    <span className="titleStyle">{content.boardTitle}</span>
+                      <span css={listTitleStyle}> {content.boardTitle} </span>
 
-                    <span className="dateStyle">
-                      {formatDate(content.createdAt)}
-                    </span>
+                      <span className="dateStyle">
+                        {formatDate(content.createdAt)}
+                      </span>
 
-                    <span className="hitStyle">{content.hit}</span>
-                  </div>
-                );
-              })}
+                      <span className="hitStyle">{content.hit}</span>
+                    </div>
+                  );
+                }
+              )}
           </div>
         </div>
 
         <div css={pageWrapper}>
-          {"<"} 1 2 3 4 5 {">"}
+          <Pagination
+            count={data?.totalPages}
+            page={page}
+            onChange={onPageChange}
+            size="medium"
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              padding: "15px 0",
+            }}
+            renderItem={(item) => (
+              <PaginationItem {...item} sx={{ fontSize: 12 }} />
+            )}
+          />
         </div>
       </div>
     </>
   );
 };
+
+export default Total;
 
 const writeButton = css`
   border-radius: 5px;
@@ -177,13 +207,6 @@ const lineStyle = (isLast: boolean) => css`
     justify-content: center;
   }
 
-  .titleStyle {
-    width: 63%;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
   .dateStyle {
     width: 10%;
     display: flex;
@@ -199,11 +222,18 @@ const lineStyle = (isLast: boolean) => css`
   }
 `;
 
+const listTitleStyle = css`
+  width: 63%;
+  justify-content: flex-start;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
 const pageWrapper = css`
   position: absolute;
   bottom: 40px;
   left: 50%;
   transform: "translate(-50%, -50%)";
 `;
-
-export default Total;

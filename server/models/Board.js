@@ -31,7 +31,7 @@ const boardSchema = mongoose.Schema(
 
     boardTitle: {
       type: String,
-      maxlength: 30,
+      minlength: 1,
       required: true,
     },
 
@@ -73,16 +73,6 @@ boardSchema.methods.findDetailBoard = async function (boardId) {
       .exec();
 
     return targetBoard;
-  } catch (err) {
-    throw err;
-  }
-};
-
-boardSchema.methods.findAllByType = async function (type) {
-  try {
-    const boardList = await Board.find({ boardType: type });
-
-    return boardList;
   } catch (err) {
     throw err;
   }

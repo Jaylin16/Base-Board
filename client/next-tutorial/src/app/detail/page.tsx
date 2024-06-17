@@ -1,23 +1,105 @@
 "use client";
 
 import { useGetBoardDetail } from "@/api/board/useBoardApi";
+import {
+  useCreateComment,
+  useDeleteComment,
+  useUpdateComment,
+} from "@/api/comment/useCommentApi";
 import { css } from "@emotion/react";
+import { useState } from "react";
 
-const DetailPage = ({ id }: { id: string }) => {
-  const { data, isLoading } = useGetBoardDetail(id);
+interface commentType {
+  _id: string;
+  commentWriterId: string;
+  commentWriterNickname: string;
+  commentContent: string;
+  createdAt: Date;
+}
 
-  const content = data && data.targetBoard;
+const DetailPage = ({ boardId }: { boardId: string }) => {
+  const [commentContent, setCommentContent] = useState<string>();
+  const [editCommentId, setEditCommentId] = useState<string | null>(null);
+  const [editComment, setEditComment] = useState<string>();
 
-  const formatDate = (date: Date) => {
+  const { data, isLoading } = useGetBoardDetail(boardId);
+
+  const createComment = useCreateComment();
+  const updateComment = useUpdateComment();
+  const deleteComment = useDeleteComment();
+
+  const content = data?.targetBoard;
+
+  const boardIntlOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  };
+
+  const commentIntlOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+  };
+
+  const formatDate = (date: Date, IntlOption: Intl.DateTimeFormatOptions) => {
     const newDate = new Date(date);
+    return new Intl.DateTimeFormat("ko", IntlOption).format(newDate);
+  };
 
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
+  /* 여기부터 이벤트 핸들러 모음 입니다. */
+
+  const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setCommentContent(value);
+  };
+
+  const commentEditHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    setEditComment(value);
+  };
+
+  /* 여기부터 버튼 핸들러 모음 입니다. */
+
+  const submitButtonHandler = () => {
+    const data = {
+      commentContent: commentContent,
+      boardId: boardId,
     };
 
-    return new Intl.DateTimeFormat("ko", options).format(newDate);
+    createComment.mutate(data, {
+      onSuccess: () => {
+        setCommentContent("");
+      },
+    });
+  };
+
+  const editButtonHandler = (commentId: string, commentContent: string) => {
+    if (editCommentId === null) {
+      setEditCommentId(commentId);
+      setEditComment(commentContent);
+    } else {
+      setEditCommentId(null);
+    }
+  };
+
+  const saveEditCommentButtonHandler = (commentId: string) => {
+    const data = {
+      commentId: commentId,
+      commentContent: editComment,
+    };
+
+    updateComment.mutate(data, {
+      onSuccess: () => {
+        setEditCommentId(null);
+      },
+    });
+  };
+
+  const deleteButtonHandler = (commentId: string) => {
+    deleteComment.mutate(commentId);
   };
 
   if (isLoading) {
@@ -36,36 +118,91 @@ const DetailPage = ({ id }: { id: string }) => {
             </div>
 
             <div css={hitWrapper}>
-              <span>👀 hit 수 {content?.hit}</span>
-              <span>💬 댓글 수</span>
+              <span>👀 {content?.hit}</span>
+              <span>💬 {content?.comments.length}</span>
             </div>
           </div>
           <div css={secondLineStyle}>
             <div>작성자: {content?.boardWriterNickname}</div>
-            <div>작성 일자: {formatDate(content?.createdAt)}</div>
+            <div>
+              작성 일자: {formatDate(content?.createdAt, boardIntlOptions)}
+            </div>
           </div>
         </div>
 
         <div css={contentBoxStyle}>
-          <iframe
-            css={iframeStyle}
-            srcDoc={content?.boardContents}
-            title="Board Content HTML"
-          />
+          <div
+            dangerouslySetInnerHTML={{ __html: content.boardContents }}
+          ></div>
         </div>
 
         <div>
-          <div css={totalCommentStyle}>💬 총 댓글수</div>
-          <div>
-            <div css={commentStyle}>
-              <span>닉네임</span>
-              <span>일자 시간</span>
-              <div css={commentContentStyle}>댓글 내용</div>
-            </div>
-          </div>
+          <div css={totalCommentStyle}>💬 {content?.comments.length}</div>
+
+          {content?.comments?.map((comment: commentType) => {
+            return (
+              <div key={comment._id}>
+                <div css={commentStyle}>
+                  <span> {comment.commentWriterNickname} </span>
+                  <span>
+                    {formatDate(comment.createdAt, commentIntlOptions)}
+                  </span>
+
+                  <button
+                    css={commentEditButtonStyle}
+                    onClick={() => {
+                      editButtonHandler(comment._id, comment.commentContent);
+                    }}
+                  >
+                    {comment._id === editCommentId ? "취소" : "수정"}
+                  </button>
+
+                  <button
+                    css={saveButtonStyle(editCommentId, comment._id)}
+                    onClick={() => {
+                      saveEditCommentButtonHandler(comment._id);
+                    }}
+                  >
+                    {"저장"}
+                  </button>
+
+                  <button
+                    css={commentEditButtonStyle}
+                    onClick={() => {
+                      deleteButtonHandler(comment._id);
+                    }}
+                  >
+                    삭제
+                  </button>
+
+                  <div css={commentContentStyle(editCommentId, comment._id)}>
+                    {comment._id !== editCommentId ? (
+                      <div> {comment.commentContent} </div>
+                    ) : (
+                      <input
+                        name="editTextBox"
+                        type="text"
+                        value={editComment}
+                        onChange={commentEditHandler}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
           <div css={commentInputWrapper}>
-            <input type="text" placeholder="댓글을 입력해주세요." />
-            <button css={commentButton}>댓글 등록</button>
+            <input
+              type="text"
+              placeholder="댓글을 입력해주세요."
+              name="commentContent"
+              value={commentContent}
+              onChange={inputHandler}
+            />
+            <button css={commentButton} onClick={submitButtonHandler}>
+              댓글 등록
+            </button>
           </div>
         </div>
       </div>
@@ -116,7 +253,7 @@ const secondLineStyle = css`
 `;
 
 const contentBoxStyle = css`
-  height: 766px;
+  min-height: 500px;
   padding: 50px 30px;
 `;
 
@@ -127,7 +264,6 @@ const totalCommentStyle = css`
 
 const commentStyle = css`
   border-bottom: 1px solid #d9d9d9;
-  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   padding: 13px 17px 34px 17px;
 
   span {
@@ -141,6 +277,23 @@ const commentStyle = css`
   }
 `;
 
+const commentEditButtonStyle = css`
+  margin: 0 5px;
+
+  color: #999999;
+  cursor: pointer;
+`;
+
+const saveButtonStyle = (
+  commentEditMode: string | null,
+  commentId: string
+) => css`
+  display: ${commentEditMode !== commentId && "none"};
+
+  color: #999999;
+  cursor: pointer;
+`;
+
 const commentButton = css`
   background: #7d9dcf;
   font-size: 18px;
@@ -148,6 +301,8 @@ const commentButton = css`
   width: 155.71px;
   border-radius: 5px;
   padding: 7.14px 30px;
+
+  cursor: pointer;
 `;
 
 const commentInputWrapper = css`
@@ -171,12 +326,14 @@ const commentInputWrapper = css`
   }
 `;
 
-const commentContentStyle = css`
-  padding-top: 23px;
-`;
+const commentContentStyle = (editCommentId: string | null, commentId: string) =>
+  css`
+    padding-top: 23px;
+    font-size: 18px;
 
-const iframeStyle = css`
-  width: 100%;
-  height: 100%;
-  border: transparent;
-`;
+    input {
+      font-size: 18px;
+      width: 100%;
+      height: 100%;
+    }
+  `;

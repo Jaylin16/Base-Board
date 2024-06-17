@@ -26,7 +26,7 @@ export default function RootLayout({
             {searchParams.get("page") === "write" ? (
               <Write type={searchParams.get("main") as string} />
             ) : searchParams.get("page") === "detail" ? (
-              <DetailPage id={searchParams.get("item_id") as string} />
+              <DetailPage boardId={searchParams.get("item_id") as string} />
             ) : (
               children
             )}

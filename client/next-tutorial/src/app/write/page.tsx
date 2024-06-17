@@ -13,16 +13,17 @@ const Write = ({ type }: { type?: string }) => {
   const [title, setTitle] = useState<string>();
   const [category, setCategory] = useState<string>();
 
-  const editorRef = useRef<null | Editor>(null);
+  const editorElRef = useRef(null); // id: editor element 의 reference
+  const editorRef = useRef<null | Editor>(null); // new Editor instance
 
   useEffect(() => {
-    const editorElement = document.querySelector("#editor") as HTMLElement;
-    if (!editorElement) {
+    const editorEl = editorElRef.current;
+    if (!editorEl) {
       console.error("Editor element not found");
     }
 
     editorRef.current = new Editor({
-      el: editorElement,
+      el: editorEl,
       height: "600px",
       initialEditType: "markdown",
       previewStyle: "vertical",
@@ -31,7 +32,7 @@ const Write = ({ type }: { type?: string }) => {
     });
 
     return () => {
-      if (editorRef.current !== null) {
+      if (editorRef.current && editorElRef.current) {
         editorRef.current.destroy();
         editorRef.current = null;
       }
@@ -92,7 +93,7 @@ const Write = ({ type }: { type?: string }) => {
               />
             </div>
 
-            <div id="editor"></div>
+            <div id="editor" ref={editorElRef}></div>
           </div>
 
           <button css={writeButtonStyle} onClick={submitHandler}>
