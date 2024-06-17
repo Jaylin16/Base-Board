@@ -3,10 +3,10 @@ import api from "../axiosConfig";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 
-const fetchData = async (type: string) => {
+const fetchData = async (type: string, page: number, pageSize: number) => {
   const result = await api({
     method: "get",
-    url: `/board/list?type=${type}`,
+    url: `/board/list?type=${type}&page=${page}&pageSize=${pageSize}`,
   });
 
   return result.data;
@@ -21,12 +21,16 @@ const fetchDetailData = async (boardId: string) => {
   return result.data;
 };
 
-export const useGetBoardList = (type: string) => {
+export const useGetBoardList = (
+  type: string,
+  page: number,
+  pageSize: number
+) => {
   const queryKey = ["useGetBoardList", type];
 
   return useQuery({
     queryKey,
-    queryFn: () => fetchData(type),
+    queryFn: () => fetchData(type, page, pageSize),
   });
 };
 
