@@ -31,7 +31,7 @@ const boardSchema = mongoose.Schema(
 
     boardTitle: {
       type: String,
-      maxlength: 30,
+      minlength: 1,
       required: true,
     },
 
