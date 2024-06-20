@@ -28,11 +28,11 @@ const Home = () => {
   ];
 
   const listParams = [
-    { type: "kbo", page: 1, pageSize: 7 },
-    { type: "hot", page: 1, pageSize: 15 },
-    { type: "야구", page: 1, pageSize: 4 },
-    { type: "자유", page: 1, pageSize: 4 },
-    { type: "공지", page: 1, pageSize: 4 },
+    { type: "kbo", page: 1, pageSize: 9 },
+    { type: "hot", page: 1, pageSize: 9 },
+    { type: "야구", page: 1, pageSize: 5 },
+    { type: "자유", page: 1, pageSize: 5 },
+    { type: "공지", page: 1, pageSize: 5 },
   ];
 
   const { data, pending } = useGetBoardsList(listParams);
