@@ -3,11 +3,13 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "../../public/image/header/Base-board logo.svg";
 import searchIcon from "../../public/image/header/serch-Icon.svg";
-import { useEffect } from "react";
+import { useState } from "react";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
+
+  const [keyword, setKeyword] = useState<string>("");
 
   const menu = [
     { no: 1, title: "전체", link: "total" },
@@ -18,9 +20,11 @@ const Header = () => {
     { no: 6, title: "공지", link: "notice" },
   ];
 
-  useEffect(() => {
-    console.log(pathname);
-  }, [pathname]);
+  const searchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+
+    setKeyword(value);
+  };
 
   return (
     <div css={rootStyles}>
@@ -45,8 +49,12 @@ const Header = () => {
 
         <div css={loginWrapper}>
           <div css={searchStyles}>
-            <input placeholder="게시물 검색하기" />
-            <button>
+            <input
+              placeholder="게시물 검색하기"
+              name="searchInput"
+              onChange={searchHandler}
+            />
+            <button onClick={() => router.push(`/search?keyword=${keyword}`)}>
               <Image src={searchIcon} alt="search" />
             </button>
           </div>
@@ -60,12 +68,6 @@ const Header = () => {
               로그인
             </div>
           )}
-          {/* <div
-            css={loginStyles(pathname.includes("login"))}
-            onClick={() => router.push("/login")}
-          >
-            로그인
-          </div> */}
         </div>
       </div>
     </div>
