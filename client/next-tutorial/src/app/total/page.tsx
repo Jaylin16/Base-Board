@@ -137,7 +137,6 @@ const tableHeaderStyle = css`
 
 const layoutStyle = css`
   padding: 35px 10%;
-  position: relative;
   height: calc(100vh - 97px);
 `;
 
@@ -232,7 +231,6 @@ const listTitleStyle = css`
 `;
 
 const pageWrapper = css`
-  position: absolute;
   bottom: 40px;
   left: 50%;
   transform: "translate(-50%, -50%)";
