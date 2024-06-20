@@ -12,7 +12,7 @@ boardController.post("/write", auth, boardService.createBoard);
 boardController.get("/list", boardService.getBoardList);
 
 //게시물 상세 불러오기
-boardController.get("/:boardId", auth, boardService.getBoardDetail);
+boardController.get("/:boardId", boardService.getBoardDetail);
 
 //게시물 수정
 boardController.put("/:boardId", auth, boardService.editBoard);

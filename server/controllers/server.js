@@ -10,6 +10,7 @@ const config = require("../config/key");
 const { loginController } = require("../controllers/loginController");
 const { boardController } = require("../controllers/boardController");
 const { commentController } = require("../controllers/commentController");
+const { searchController } = require("./searchController");
 
 app.listen(port, () => {
   console.log(`${port}서버에 연결되었습니다.`);
@@ -37,3 +38,4 @@ app.use(
 app.use("/", loginController);
 app.use("/board", boardController);
 app.use("/comment", commentController);
+app.use("/search", searchController);
