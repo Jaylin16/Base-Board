@@ -132,7 +132,6 @@ export default Board;
 const rootStyle = css`
   height: calc(100vh - 97px);
   padding: 35px 10%;
-  position: relative;
 `;
 
 const titleStyle = css`
@@ -236,7 +235,6 @@ const listTitleStyle = css`
 `;
 
 const pageWrapper = css`
-  position: absolute;
   bottom: 40px;
   left: 50%;
 `;
