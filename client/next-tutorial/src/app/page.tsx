@@ -176,12 +176,12 @@ export default Home;
 
 const rootStyles = css`
   width: 100vw;
-  padding: 0 10%;
+  padding: 50px 10% 0 10%;
 `;
 
 const areaBox = css`
   display: flex;
-  padding: 55px 0 20px 0;
+  padding: 20px 0 20px 0;
   gap: 20px;
   width: 100%;
 `;
