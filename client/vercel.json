@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "client/next-tutorial/package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "client/next-tutorial/package.json" }]
+}
