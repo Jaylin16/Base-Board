@@ -24,16 +24,18 @@ mongoose
 //쿼리 확인을 위한 디버그 옵션 설정
 mongoose.set("debug", true);
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
+const corsUrl = config.baseURL;
+
 app.use(
   cors({
-    origin: true,
+    origin: corsUrl,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
   })
 );
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cookieParser());
 
 app.use("/", loginController);
 app.use("/board", boardController);
