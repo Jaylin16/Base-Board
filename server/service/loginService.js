@@ -47,9 +47,11 @@ const userLogin = async (req, res) => {
     const userInfoWithToken = await userInfo.createToken();
 
     const cookieOptions = {
-      // httpOnly: true,
+      httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, //1일
       // maxAge: 1000 * 60 * 5, //5분
+      secure: process.env.NODE_ENV === "production", // HTTPS에서만 보안 설정
+      sameSite: "None", // Cross-Site 요청에서 쿠키를 허용
     };
 
     // 토큰을 저장해줌. (쿠키 방식)
