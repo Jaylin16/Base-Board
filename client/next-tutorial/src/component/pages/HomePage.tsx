@@ -197,6 +197,7 @@ const kboNowStyle = css`
   text-overflow: ellipsis;
   white-space: nowrap;
 
+  max-width: 65%;
   height: 365px;
   border-radius: 14px;
   border-radius: 14px;
