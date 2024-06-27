@@ -77,11 +77,11 @@ export const useGetBoardDetail = (boardId: string) => {
 export const usePostBoard = () => {
   return useMutation({
     mutationFn: async (data: any) => {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/board/write`,
-        data,
-        { withCredentials: true }
-      );
+      const response = await api({
+        method: "post",
+        url: "/board/write",
+        data: data,
+      });
 
       return response;
     },
