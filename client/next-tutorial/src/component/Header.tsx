@@ -3,13 +3,17 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "../../public/image/header/Base-board logo.svg";
 import searchIcon from "../../public/image/header/serch-Icon.svg";
-import { useState } from "react";
+import { KeyboardEvent, useEffect, useState } from "react";
+import { useLogout } from "@/api/user/useLogin";
+import { Dialog } from "@mui/material";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const logout = useLogout();
 
   const [keyword, setKeyword] = useState<string>("");
+  const [isLogout, setIsLogout] = useState(false);
 
   const menu = [
     { no: 1, title: "전체", link: "total" },
@@ -22,8 +26,35 @@ const Header = () => {
 
   const searchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
-
     setKeyword(value);
+  };
+
+  const searchButtonHandler = () => {
+    router.push(`/search?keyword=${keyword}`);
+    setKeyword("");
+  };
+
+  const enterKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      searchButtonHandler();
+    }
+  };
+
+  const logoutButtonHandler = () => {
+    setIsLogout(true);
+  };
+
+  const yesButtonHandler = () => {
+    if (isLogout) {
+      logout.mutate();
+
+      setIsLogout(false);
+      router.push("/");
+    }
+  };
+
+  const noButtonHandler = () => {
+    setIsLogout(false);
   };
 
   return (
@@ -52,14 +83,49 @@ const Header = () => {
             <input
               placeholder="게시물 검색하기"
               name="searchInput"
+              value={keyword}
               onChange={searchHandler}
+              onKeyDown={enterKeyDownHandler}
             />
-            <button onClick={() => router.push(`/search?keyword=${keyword}`)}>
+            <button onClick={searchButtonHandler}>
               <Image src={searchIcon} alt="search" />
             </button>
           </div>
           {localStorage.getItem("nickName") ? (
-            <div>{localStorage.getItem("nickName")} </div>
+            <div css={logoutWrapper}>
+              <div>{localStorage.getItem("nickName")} </div>
+              <button css={logoutButtonStyle} onClick={logoutButtonHandler}>
+                로그아웃
+              </button>
+
+              <Dialog
+                open={isLogout}
+                onClose={() => {
+                  setIsLogout(false);
+                }}
+                sx={{
+                  "& .MuiDialog-paper": {
+                    borderRadius: "16px",
+                    padding: "14px",
+                    textAlign: "center",
+                    width: "250px",
+                    height: "150px",
+                  },
+                }}
+              >
+                <div css={modalWrapper}>
+                  <p> 로그아웃 하시겠습니까? </p>
+                  <div css={modalButtonWrapper}>
+                    <button className="buttonStyle" onClick={yesButtonHandler}>
+                      예
+                    </button>
+                    <button className="buttonStyle" onClick={noButtonHandler}>
+                      아니오
+                    </button>
+                  </div>
+                </div>
+              </Dialog>
+            </div>
           ) : (
             <div
               css={loginStyles(pathname.includes("login"))}
@@ -171,4 +237,40 @@ const menuItem = (isActive: boolean) => css`
   display: flex;
   align-items: center;
   justify-content: center;
+`;
+
+const logoutWrapper = css`
+  display: flex;
+  gap: 30px;
+`;
+
+const logoutButtonStyle = css`
+  cursor: pointer;
+`;
+
+const modalWrapper = css`
+  width: 100%;
+  height: 100%;
+  padding: auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+`;
+
+const modalButtonWrapper = css`
+  display: flex;
+  gap: 30px;
+
+  .buttonStyle {
+    width: 70px;
+    height: 30px;
+
+    background-color: #517dbf;
+    border-radius: 5px;
+
+    cursor: pointer;
+  }
 `;

@@ -8,7 +8,7 @@ const searchTitle = async (req, res) => {
 
     const result = await Board.find({
       boardTitle: regex,
-    });
+    }).sort({ createdAt: -1 });
 
     res.status(200).json({
       result: result,

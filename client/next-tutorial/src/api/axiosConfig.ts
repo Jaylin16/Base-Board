@@ -7,12 +7,6 @@ const api = Axios.create({
 
 api.interceptors.response.use(
   function (res) {
-    const cookie = document.cookie;
-
-    if (!cookie.split("=")[1]) {
-      localStorage.removeItem("nickName");
-    }
-
     return res;
   },
   function (err) {

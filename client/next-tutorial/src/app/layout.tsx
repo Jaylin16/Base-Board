@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import "@/styles/globals.css";
 import baseTheme from "@/styles/theme";
 import Header from "@/component/Header";
-import Write from "./write/page";
-import DetailPage from "./detail/page";
+import DetailPage from "@/component/pages/board/DetailPage";
+import WritePage from "@/component/pages/board/WritePage";
 
 const queryClient = new QueryClient();
 
@@ -23,10 +23,12 @@ export default function RootLayout({
         <QueryClientProvider client={queryClient}>
           <ThemeProvider theme={baseTheme}>
             <Header />
+
             {searchParams.get("page") === "write" ? (
-              <Write type={searchParams.get("main") as string} />
-            ) : searchParams.get("page") === "detail" ? (
-              <DetailPage boardId={searchParams.get("item_id") as string} />
+              <WritePage searchParams={searchParams} />
+            ) : searchParams.get("page") === "detail" &&
+              searchParams.get("item_id") ? (
+              <DetailPage searchParams={searchParams} />
             ) : (
               children
             )}
