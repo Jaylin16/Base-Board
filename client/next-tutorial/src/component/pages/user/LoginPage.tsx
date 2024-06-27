@@ -25,13 +25,8 @@ const LoginPage: React.FC = () => {
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
-    setParams({
-      ...params,
-      [name]: value,
-    });
-
     if (name === "email") {
-      if (emailRegex.test(params.email)) {
+      if (emailRegex.test(value)) {
         setEmailFilled(true);
       } else {
         setEmailFilled(false);
@@ -76,6 +71,7 @@ const LoginPage: React.FC = () => {
                 placeholder="아이디(이메일 입력)"
                 type="text"
                 name="email"
+                autoComplete="on"
                 onChange={inputHandler}
               />
 
@@ -84,6 +80,7 @@ const LoginPage: React.FC = () => {
                 placeholder="비밀번호"
                 type="password"
                 name="password"
+                autoComplete="on"
                 onChange={inputHandler}
               />
             </div>

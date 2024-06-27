@@ -1,5 +1,6 @@
 import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import api from "../axiosConfig";
 
 export const useUpdateLogin = () => {
   return useMutation({
@@ -11,6 +12,25 @@ export const useUpdateLogin = () => {
       );
 
       return response;
+    },
+  });
+};
+
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: async () => {
+      const response = await api({
+        method: "post",
+        url: "/logout",
+      });
+
+      return response;
+    },
+    onSuccess: () => {
+      localStorage.removeItem("nickName");
+    },
+    onError: () => {
+      alert("로그아웃에 실패했습니다.");
     },
   });
 };
