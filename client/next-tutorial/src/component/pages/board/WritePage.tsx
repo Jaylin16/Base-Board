@@ -16,11 +16,16 @@ const WritePage = ({ searchParams }: WritePageProps) => {
 
   const [title, setTitle] = useState<string>();
   const [category, setCategory] = useState<string>();
-
+  const [isContents, setIsContents] = useState(false);
   const type = searchParams?.get("main") as string;
 
   const editorElRef = useRef(null); // id: editor element 의 reference
   const editorRef = useRef<null | Editor>(null); // new Editor instance
+
+  const handleChangeEditor = (contents: string | undefined) => {
+    const isContent = !!contents && contents.length > 10;
+    setIsContents(isContent);
+  };
 
   useEffect(() => {
     const editorEl = editorElRef.current;
@@ -35,17 +40,21 @@ const WritePage = ({ searchParams }: WritePageProps) => {
       previewStyle: "vertical",
       initialValue: "",
       placeholder: "내용을 10자 이상 입력해주세요.",
+      events: {
+        change: () => handleChangeEditor(editorRef.current?.getMarkdown()),
+      },
     });
 
     return () => {
       if (editorRef.current && editorElRef.current) {
         editorRef.current.destroy();
-        editorRef.current = null;
       }
     };
   }, []);
 
   const submitHandler = () => {
+    setIsContents(false);
+
     const html = editorRef.current?.getHTML();
 
     const data = {
@@ -64,10 +73,14 @@ const WritePage = ({ searchParams }: WritePageProps) => {
 
     postBoard.mutate(data, {
       onSuccess: (res) => {
+        setIsContents(false);
+
         router.push(`/${type}`);
       },
       onError: (err) => {
         alert("작성된 글을 저장하는데 실패했습니다.");
+
+        setIsContents(true);
       },
     });
   };
@@ -102,7 +115,11 @@ const WritePage = ({ searchParams }: WritePageProps) => {
             <div id="editor" ref={editorElRef}></div>
           </div>
 
-          <button css={writeButtonStyle} onClick={submitHandler}>
+          <button
+            css={writeButtonStyle(isContents)}
+            onClick={submitHandler}
+            disabled={!isContents}
+          >
             등록하기
           </button>
         </div>
@@ -126,14 +143,21 @@ const pageTitleStyle = css`
   color: #1d3d65;
 `;
 
-const writeButtonStyle = css`
+const writeButtonStyle = (isContents: boolean) => css`
   padding: 26px 71px;
   border-radius: 20px;
-  background: #517dbf;
+  background: #7d9dcf;
   font-size: 20px;
   width: 216px;
   height: 79px;
   margin-bottom: 40px;
+
+  cursor: ${isContents && "pointer"};
+
+  &:disabled,
+  &[disabled] {
+    background: #999999;
+  }
 `;
 
 const writeFieldStyle = css`
