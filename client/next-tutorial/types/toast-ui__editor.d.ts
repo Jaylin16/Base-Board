@@ -8,7 +8,7 @@ declare module "@toast-ui/editor" {
 
   export class Editor {
     constructor(options: EditorOptions);
-    getMarkdown(): void;
+    getMarkdown(): string;
     getHTML(): void;
   }
 }
