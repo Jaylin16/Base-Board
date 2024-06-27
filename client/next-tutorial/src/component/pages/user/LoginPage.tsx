@@ -25,6 +25,11 @@ const LoginPage: React.FC = () => {
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
 
+    setParams({
+      ...params,
+      [name]: value,
+    });
+
     if (name === "email") {
       if (emailRegex.test(value)) {
         setEmailFilled(true);
@@ -95,7 +100,7 @@ const LoginPage: React.FC = () => {
               </div>
               <button
                 css={loginButton(emailFilled && passwordFilled)}
-                disabled={emailFilled && passwordFilled}
+                disabled={!emailFilled && !passwordFilled}
                 onClick={submitHandler}
               >
                 로그인
