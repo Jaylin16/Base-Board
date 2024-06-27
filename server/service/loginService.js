@@ -47,11 +47,12 @@ const userLogin = async (req, res) => {
     const userInfoWithToken = await userInfo.createToken();
 
     const cookieOptions = {
-      httpOnly: true,
+      // httpOnly: true,
       maxAge: 1000 * 60 * 60 * 24, //1일
       // maxAge: 1000 * 60 * 5, //5분
-      secure: process.env.NODE_ENV === "production", // HTTPS에서만 보안 설정
-      sameSite: "None", // Cross-Site 요청에서 쿠키를 허용
+      secure: process.env.NODE_ENV === "production", //  Https 사이트에서 설정한 쿠키만 엑세스 가능
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "", // Cross-Site 요청에서 쿠키를 허용
+      path: "/",
     };
 
     // 토큰을 저장해줌. (쿠키 방식)
@@ -88,10 +89,20 @@ const userLogout = async (req, res) => {
       { token: "" }
     );
 
-    return res.status(200).send({
-      success: true,
-      message: `${user.nickName} 님 로그아웃 되었습니다.`,
-    });
+    const cookieOptions = {
+      httpOnly: true,
+      expires: new Date(0),
+      secure: process.env.NODE_ENV === "production", //  Https 사이트에서 설정한 쿠키만 엑세스 가능
+      sameSite: process.env.NODE_ENV === "production" ? "None" : "", // Cross-Site 요청에서 쿠키를 허용
+    };
+
+    return res
+      .cookie("auth_cookie", "", cookieOptions)
+      .status(200)
+      .send({
+        success: true,
+        message: `${user.nickName} 님 로그아웃 되었습니다.`,
+      });
   } catch (err) {
     return res.json({ success: false, err });
   }

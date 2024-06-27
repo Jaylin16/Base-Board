@@ -15,6 +15,6 @@ loginController.post("/login", loginService.userLogin);
 loginController.get("/auth", auth, loginService.checkAuth);
 
 //로그아웃
-loginController.get("/logout", auth, loginService.userLogout);
+loginController.post("/logout", auth, loginService.userLogout);
 
 module.exports = { loginController };
