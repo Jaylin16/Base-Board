@@ -34,6 +34,18 @@ const TotalPage = () => {
     setPage(newPage);
   };
 
+  const onClickWriteButton = () => {
+    const currentParmas = Object.fromEntries(searchParams);
+    let newSearchParmas = { ...currentParmas };
+    newSearchParmas = {
+      ...currentParmas,
+      main: `${pathname.slice(1)}`,
+      page: `write`,
+    };
+
+    router.push(`?${new URLSearchParams(newSearchParmas)}`);
+  };
+
   const onClickDetailButton = (id: string) => {
     const currentParmas = Object.fromEntries(searchParams);
     let newSearchParmas = { ...currentParmas };
@@ -52,7 +64,9 @@ const TotalPage = () => {
       <div css={layoutStyle}>
         <div css={tableHeaderStyle}>
           <div>📜 전체게시물</div>
-          <div css={writeButton}> ✏️ 글 작성 </div>
+          <div css={writeButton} onClick={onClickWriteButton}>
+            ✏️ 글 작성
+          </div>
         </div>
 
         <div>
@@ -60,6 +74,7 @@ const TotalPage = () => {
             <span className="noStyle">no</span>
             <span className="categoryStyle">카테고리</span>
             <span className="titleStyle">제목</span>
+            <span className="writerStyle">작성자</span>
             <span className="dateStyle">날짜</span>
             <span className="hitStyle">조회</span>
           </div>
@@ -81,6 +96,11 @@ const TotalPage = () => {
                       </span>
 
                       <span css={listTitleStyle}> {content.boardTitle} </span>
+                      <span css={writerStyle}>
+                        <div css={shortTextStyle}>
+                          {content.boardWriterNickname}
+                        </div>
+                      </span>
 
                       <span className="dateStyle">
                         {formatDate(content.createdAt)}
@@ -162,9 +182,14 @@ const firstLineStyle = css`
   }
 
   .titleStyle {
-    width: 63%;
+    width: 50%;
     display: flex;
-    align-items: center;
+    justify-content: center;
+  }
+
+  .writerStyle {
+    width: 13%;
+    display: flex;
     justify-content: center;
   }
 
@@ -191,6 +216,7 @@ const lineStyle = (isLast: boolean) => css`
   border-bottom: ${!isLast && "1px solid #d9d9d9"};
   display: flex;
   align-items: center;
+  cursor: pointer;
 
   .noStyle {
     width: 7%;
@@ -222,9 +248,21 @@ const lineStyle = (isLast: boolean) => css`
 `;
 
 const listTitleStyle = css`
-  width: 63%;
+  width: 50%;
   justify-content: flex-start;
 
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+`;
+
+const writerStyle = css`
+  width: 13%;
+  display: flex;
+  justify-content: center;
+`;
+
+const shortTextStyle = css`
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
