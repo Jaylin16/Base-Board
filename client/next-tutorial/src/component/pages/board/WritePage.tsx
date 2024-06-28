@@ -10,22 +10,59 @@ interface WritePageProps {
   searchParams: ReadonlyURLSearchParams;
 }
 
+interface categoryListType {
+  name: string;
+  category: string;
+}
+
 const WritePage = ({ searchParams }: WritePageProps) => {
   const router = useRouter();
   const postBoard = usePostBoard();
 
+  const [type, setType] = useState<string>(searchParams?.get("main") as string);
   const [title, setTitle] = useState<string>();
-  const [category, setCategory] = useState<string>();
-  const [isContents, setIsContents] = useState(false);
-  const type = searchParams?.get("main") as string;
+  const [category, setCategory] = useState<string>("");
+  const [categoryList, setCategoryList] = useState<{
+    list: categoryListType[];
+  }>();
+  const [contents, setContents] = useState<string>();
+  const [disableButton, setDisableButton] = useState(false);
+
+  const typeArr = [
+    { name: "kbo", type: "KBO" },
+    { name: "baseball", type: "야구" },
+    { name: "board", type: "자유" },
+    { name: "notice", type: "공지" },
+  ];
+
+  const kboArr = [
+    { name: "SSG", category: "SSG 랜더스" },
+    { name: "KIA", category: "KIA 타이거즈" },
+    { name: "LG", category: "LG 트윈스" },
+    { name: "한화", category: "한화 이글스" },
+    { name: "KT", category: "KT 위즈" },
+    { name: "NC", category: "NC 다이노스" },
+    { name: "키움", category: "키움 히어로즈" },
+    { name: "두산", category: "두산 베어스" },
+    { name: "롯데", category: "롯데 자이언츠" },
+    { name: "삼성", category: "삼성 라이온즈" },
+  ];
+
+  const boardArr = [
+    { name: "뉴스", category: "뉴스" },
+    { name: "정보", category: "정보" },
+    { name: "기타", category: "기타" },
+    { name: "이슈", category: "이슈" },
+    { name: "유머", category: "유머" },
+  ];
+
+  const noticeArr = [
+    { name: "important", category: "중요 공지" },
+    { name: "normal", category: "일반 공지" },
+  ];
 
   const editorElRef = useRef(null); // id: editor element 의 reference
   const editorRef = useRef<null | Editor>(null); // new Editor instance
-
-  const handleChangeEditor = (contents: string | undefined) => {
-    const isContent = !!contents && contents.length > 10;
-    setIsContents(isContent);
-  };
 
   useEffect(() => {
     const editorEl = editorElRef.current;
@@ -52,8 +89,33 @@ const WritePage = ({ searchParams }: WritePageProps) => {
     };
   }, []);
 
+  const handleChangeEditor = (content: string | undefined) => {
+    setContents(content);
+  };
+
   const submitHandler = () => {
-    setIsContents(false);
+    if (
+      type === undefined ||
+      type === "" ||
+      type === "hot" ||
+      type === "total"
+    ) {
+      return alert("글타입을 선택해주세요.");
+    }
+
+    if (category === "") {
+      return alert("카테고리를 선택해주세요.");
+    }
+
+    if (!title || title.trim().length < 1) {
+      return alert("제목을 2자 이상 입력해주세요.");
+    }
+
+    if (!contents || contents.trim().length < 10) {
+      return alert("내용을 10자 이상 입력해주세요.");
+    }
+
+    setDisableButton(true);
 
     const html = editorRef.current?.getHTML();
 
@@ -66,31 +128,53 @@ const WritePage = ({ searchParams }: WritePageProps) => {
           : type === "notice"
           ? "공지"
           : type,
-      category: category || "카테고리",
+      category: category,
       boardTitle: title,
       boardContents: html,
     };
 
     postBoard.mutate(data, {
       onSuccess: (res) => {
-        setIsContents(false);
+        setDisableButton(true);
 
         router.push(`/${type}`);
       },
       onError: (err) => {
-        alert("작성된 글을 저장하는데 실패했습니다.");
+        alert("작성된 글을 저장하는데 실패했습니다. 다시 시도해주세요.");
 
-        setIsContents(true);
+        setDisableButton(false);
       },
     });
   };
 
-  const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.name === "title") {
-      setTitle(event.target.value);
+  const titleInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+
+  const dropdownHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategory(event.target.value);
+  };
+
+  const typeDropdownHandler = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setType(event.target.value);
+  };
+
+  const dropdownListHandler = () => {
+    let data;
+
+    if (type === "board") {
+      data = {
+        list: boardArr,
+      };
+    } else if (type === "notice") {
+      data = { list: noticeArr };
     } else {
-      setCategory(event.target.value);
+      data = {
+        list: kboArr,
+      };
     }
+
+    setCategoryList(data);
   };
 
   return (
@@ -100,15 +184,50 @@ const WritePage = ({ searchParams }: WritePageProps) => {
         <div css={writeFieldStyle}>
           <div css={inputWrapper}>
             <div css={titleInputWrapper}>
-              <div css={categoryStyle} onChange={inputHandler}>
-                카테고리
+              <div css={categoryStyle}>
+                <select
+                  name="category"
+                  id="dropdown"
+                  css={dropdownStyle}
+                  defaultValue={type}
+                  onChange={typeDropdownHandler}
+                >
+                  <option value=""> —— 글타입 —— </option>;
+                  {typeArr?.map((item, index) => {
+                    return (
+                      <option key={index} value={item.name}>
+                        {item.type}
+                      </option>
+                    );
+                  })}
+                </select>
               </div>
+
+              <div css={categoryStyle}>
+                <select
+                  name="category"
+                  id="dropdown"
+                  css={dropdownStyle}
+                  onChange={dropdownHandler}
+                  onClick={dropdownListHandler}
+                >
+                  <option value=""> —— 카테고리 —— </option>;
+                  {categoryList?.list.map((item, index) => {
+                    return (
+                      <option key={index} value={item.name}>
+                        {item.category}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
               <input
                 css={titleInputStyle}
                 type="text"
                 name="title"
                 placeholder="제목을 입력해주세요."
-                onChange={inputHandler}
+                onChange={titleInputHandler}
               />
             </div>
 
@@ -116,9 +235,11 @@ const WritePage = ({ searchParams }: WritePageProps) => {
           </div>
 
           <button
-            css={writeButtonStyle(isContents)}
+            css={writeButtonStyle(
+              !!title && title.length > 1 && !!contents && contents.length > 10
+            )}
             onClick={submitHandler}
-            disabled={!isContents}
+            disabled={disableButton}
           >
             등록하기
           </button>
@@ -146,18 +267,13 @@ const pageTitleStyle = css`
 const writeButtonStyle = (isContents: boolean) => css`
   padding: 26px 71px;
   border-radius: 20px;
-  background: #7d9dcf;
+  background: ${isContents ? "#7d9dcf" : "#999999"};
   font-size: 20px;
   width: 216px;
   height: 79px;
   margin-bottom: 40px;
 
-  cursor: ${isContents && "pointer"};
-
-  &:disabled,
-  &[disabled] {
-    background: #999999;
-  }
+  cursor: pointer;
 `;
 
 const writeFieldStyle = css`
@@ -171,11 +287,13 @@ const categoryStyle = css`
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.25);
   border: 1px solid #999999;
   display: flex;
+  align-items: center;
+  justify-content: center;
+
   width: 216px;
   height: 51px;
   padding: 14px 31px;
   color: #999999;
-  font-size: 20px;
 `;
 
 const titleInputStyle = css`
@@ -208,4 +326,9 @@ const inputWrapper = css`
   display: flex;
   justify-content: center;
   flex-direction: column;
+`;
+
+const dropdownStyle = css`
+  font-size: 20px;
+  border: transparent;
 `;
