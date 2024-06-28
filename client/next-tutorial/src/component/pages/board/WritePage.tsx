@@ -57,8 +57,8 @@ const WritePage = ({ searchParams }: WritePageProps) => {
   ];
 
   const noticeArr = [
-    { name: "important", category: "중요 공지" },
-    { name: "normal", category: "일반 공지" },
+    { name: "중요", category: "중요 공지" },
+    { name: "일반", category: "일반 공지" },
   ];
 
   const editorElRef = useRef(null); // id: editor element 의 reference
