@@ -34,6 +34,18 @@ const TotalPage = () => {
     setPage(newPage);
   };
 
+  const onClickWriteButton = () => {
+    const currentParmas = Object.fromEntries(searchParams);
+    let newSearchParmas = { ...currentParmas };
+    newSearchParmas = {
+      ...currentParmas,
+      main: `${pathname.slice(1)}`,
+      page: `write`,
+    };
+
+    router.push(`?${new URLSearchParams(newSearchParmas)}`);
+  };
+
   const onClickDetailButton = (id: string) => {
     const currentParmas = Object.fromEntries(searchParams);
     let newSearchParmas = { ...currentParmas };
@@ -52,7 +64,9 @@ const TotalPage = () => {
       <div css={layoutStyle}>
         <div css={tableHeaderStyle}>
           <div>📜 전체게시물</div>
-          <div css={writeButton}> ✏️ 글 작성 </div>
+          <div css={writeButton} onClick={onClickWriteButton}>
+            ✏️ 글 작성
+          </div>
         </div>
 
         <div>
