@@ -51,14 +51,16 @@ const LoginPage: React.FC = () => {
 
   const updateLogin = useUpdateLogin();
 
-  const submitHandler = () => {
+  const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
     updateLogin.mutate(params, {
       onSuccess: (res) => {
         localStorage.setItem("nickName", res.data.userName);
         router.push("/");
       },
       onError: (err) => {
-        alert("로그인 실패");
+        alert("아이디 또는 비밀번호가 일치하지 않습니다.");
       },
     });
   };
@@ -69,44 +71,46 @@ const LoginPage: React.FC = () => {
         <div css={loginBoxStyle}>
           <div css={loginStyle}>로그인</div>
 
-          <div css={innerBox}>
-            <div css={inputWrapper}>
-              <input
-                css={inputStyle}
-                placeholder="아이디(이메일 입력)"
-                type="text"
-                name="email"
-                autoComplete="on"
-                onChange={inputHandler}
-              />
+          <form onSubmit={submitHandler}>
+            <div css={innerBox}>
+              <div css={inputWrapper}>
+                <input
+                  css={inputStyle}
+                  placeholder="아이디(이메일 입력)"
+                  type="text"
+                  name="email"
+                  autoComplete="on"
+                  onChange={inputHandler}
+                />
 
-              <input
-                css={inputStyle}
-                placeholder="비밀번호"
-                type="password"
-                name="password"
-                autoComplete="on"
-                onChange={inputHandler}
-              />
-            </div>
-
-            <div css={loginButtonWrapper}>
-              <div style={{ color: "#999999" }}>
-                <CustomCheckbox
-                  checked={checked}
-                  onChange={handleCheckboxChange}
-                  label="로그인 유지"
+                <input
+                  css={inputStyle}
+                  placeholder="비밀번호"
+                  type="password"
+                  name="password"
+                  autoComplete="on"
+                  onChange={inputHandler}
                 />
               </div>
-              <button
-                css={loginButton(emailFilled && passwordFilled)}
-                disabled={!emailFilled && !passwordFilled}
-                onClick={submitHandler}
-              >
-                로그인
-              </button>
+
+              <div css={loginButtonWrapper}>
+                <div style={{ color: "#999999" }}>
+                  <CustomCheckbox
+                    checked={checked}
+                    onChange={handleCheckboxChange}
+                    label="로그인 유지"
+                  />
+                </div>
+                <button
+                  css={loginButton(emailFilled && passwordFilled)}
+                  disabled={!emailFilled && !passwordFilled}
+                  type="submit"
+                >
+                  로그인
+                </button>
+              </div>
             </div>
-          </div>
+          </form>
 
           <div css={registerButtonWrapper}>
             <div css={buttonStyle}>ID/PW 찾기</div> |{" "}
