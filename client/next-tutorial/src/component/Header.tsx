@@ -3,7 +3,7 @@ import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Logo from "../../public/image/header/Base-board logo.svg";
 import searchIcon from "../../public/image/header/serch-Icon.svg";
-import { KeyboardEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLogout } from "@/api/user/useLogin";
 import { Dialog } from "@mui/material";
 
@@ -24,19 +24,25 @@ const Header = () => {
     { no: 6, title: "공지", link: "notice" },
   ];
 
+  //검색어 입력 중 페이지 이동시 검색어 초기화
+  useEffect(() => {
+    if (pathname !== "/search") {
+      setKeyword("");
+    }
+  }, [pathname]);
+
   const searchHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
     setKeyword(value);
   };
 
-  const searchButtonHandler = () => {
-    router.push(`/search?keyword=${keyword}`);
-    setKeyword("");
-  };
+  const searchButtonHandler = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // onSubmit 이벤트 실행시 발생하는 새로고침 방지
 
-  const enterKeyDownHandler = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      searchButtonHandler();
+    if (keyword === "") {
+      alert("검색어를 입력해주세요.");
+    } else {
+      router.push(`/search?keyword=${keyword}`);
     }
   };
 
@@ -79,21 +85,21 @@ const Header = () => {
         </div>
 
         <div css={loginWrapper}>
-          <div css={searchStyles}>
+          <form css={searchStyles} onSubmit={searchButtonHandler}>
             <input
               placeholder="게시물 검색하기"
               name="searchInput"
               value={keyword}
               onChange={searchHandler}
-              onKeyDown={enterKeyDownHandler}
             />
-            <button onClick={searchButtonHandler}>
+            <button type="submit">
               <Image src={searchIcon} alt="search" />
             </button>
-          </div>
+          </form>
+
           {localStorage.getItem("nickName") ? (
             <div css={logoutWrapper}>
-              <div>{localStorage.getItem("nickName")} </div>
+              <div css={nicknameStyle}>{localStorage.getItem("nickName")}</div>
               <button css={logoutButtonStyle} onClick={logoutButtonHandler}>
                 로그아웃
               </button>
@@ -242,6 +248,14 @@ const menuItem = (isActive: boolean) => css`
 const logoutWrapper = css`
   display: flex;
   gap: 30px;
+`;
+
+const nicknameStyle = css`
+  width: 110px;
+
+  @media (max-width: 1335px) {
+    display: none;
+  }
 `;
 
 const logoutButtonStyle = css`

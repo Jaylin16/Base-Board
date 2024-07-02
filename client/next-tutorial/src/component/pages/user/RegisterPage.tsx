@@ -8,6 +8,8 @@ import { Dialog, DialogTitle, DialogContent } from "@mui/material";
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();
+  const updateSignUp = useUpdateSignUp();
+
   const [checked, setChecked] = useState(false);
   const [params, setParams] = useState<{
     nickName: string;
@@ -18,36 +20,63 @@ const RegisterPage: React.FC = () => {
     email: "",
     password: "",
   });
-
-  const [checkedPassword, setCheckedPassword] = useState<string>("");
   const [emailReg, setEmailReg] = useState<boolean>(true);
   const [passwordReg, setPasswordReg] = useState<boolean>(true);
+  const [checkedPassword, setCheckedPassword] = useState<string>("");
+  const [nickName, setNickName] = useState<string>("");
   const [signUpSuccess, setSignUpSuccess] = useState<boolean>(false);
 
-  const blurHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.name === "email") {
-      setEmailReg(emailRegex.test(event.target.value));
-    } else if (event.target.name === "password") {
-      setPasswordReg(passwordRegex.test(event.target.value));
-    }
-  };
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const passwordRegex = /^[A-Za-z\d]{9,}$/;
 
   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+
+    if (name === "email") {
+      setEmailReg(emailRegex.test(value));
+    } else if (name === "password") {
+      setPasswordReg(passwordRegex.test(value));
+    } else if (name === "nickName") {
+      setNickName(value);
+    }
+
     setParams({
       ...params,
       [event.target.name]: event.target.value,
     });
   };
 
-  const updateSignUp = useUpdateSignUp();
-
   const submitHandler = () => {
+    if (
+      params.nickName.length < 1 ||
+      params.email.length < 1 ||
+      params.password.length < 1
+    ) {
+      return alert("모든 정보를 입력해주세요.");
+    }
+
+    if (nickName.length > 10) {
+      return alert("닉네임은 10자 이내로 입력해주세요.");
+    }
+
+    if (!emailReg) {
+      return alert("올바른 이메일 형식을 입력해주세요.");
+    }
+
+    if (!passwordReg) {
+      return alert("비밀번호는 영문, 숫자 포함 9자리 이상 입력해주세요.");
+    }
+
+    if (checkedPassword !== params.password) {
+      return alert("비밀번호 확인이 일치하지 않습니다.");
+    }
+
     updateSignUp.mutate(params, {
       onSuccess: (res) => {
         setSignUpSuccess(true);
       },
       onError: (err) => {
-        alert("회원가입에 실패했습니다.");
+        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
       },
     });
   };
@@ -55,9 +84,6 @@ const RegisterPage: React.FC = () => {
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(event.target.checked);
   };
-
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  const passwordRegex = /^[A-Za-z\d]{9,}$/;
 
   return (
     <>
@@ -68,29 +94,29 @@ const RegisterPage: React.FC = () => {
           <div css={innerBox}>
             <div css={inputWrapper}>
               <input
-                css={inputStyle(true)}
-                placeholder="닉네임"
+                css={inputStyle(nickName.length < 11)}
+                placeholder="닉네임 (10자 이하)"
                 type="text"
                 name="nickName"
+                autoComplete="on"
                 onChange={inputHandler}
               />
 
               <input
                 css={inputStyle(emailReg)}
-                placeholder="이메일을 입력하세요(아이디)"
+                placeholder="이메일을 입력하세요 (아이디)"
                 type="text"
                 name="email"
+                autoComplete="on"
                 onChange={inputHandler}
-                onBlur={blurHandler}
               />
 
               <input
                 css={inputStyle(passwordReg)}
-                placeholder="비밀번호(영어,숫자포함 9자리 이상)"
+                placeholder="비밀번호 (영어,숫자포함 9자리 이상)"
                 type="password"
                 name="password"
                 onChange={inputHandler}
-                onBlur={blurHandler}
               />
 
               <input
@@ -130,12 +156,6 @@ const RegisterPage: React.FC = () => {
                     emailReg &&
                     passwordReg
                 )}
-                disabled={
-                  params.nickName.length < 1 &&
-                  params.email.length < 1 &&
-                  params.password.length < 1 &&
-                  checkedPassword !== params.password
-                }
                 onClick={submitHandler}
               >
                 회원가입
@@ -235,7 +255,7 @@ const registerButton = (isActive: boolean) => css`
   align-items: center;
   justify-content: center;
 
-  cursor: ${isActive && "pointer"};
+  cursor: pointer;
 
   -moz-appearance: none;
   -webkit-appearance: none;

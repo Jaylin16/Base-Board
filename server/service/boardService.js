@@ -38,7 +38,6 @@ const getBoardList = async (req, res) => {
 
     let boardList;
     let totalBoards;
-    let totalPages;
 
     if (type === "전체") {
       boardList = await Board.find()
@@ -47,7 +46,13 @@ const getBoardList = async (req, res) => {
         .sort({ createdAt: -1 });
 
       totalBoards = await Board.countDocuments();
-      totalPages = Math.ceil(totalBoards / pageSize);
+    } else if (type === "hot") {
+      boardList = await Board.find()
+        .skip((page - 1) * pageSize)
+        .limit(pageSize)
+        .sort({ hit: -1 });
+
+      totalBoards = await Board.countDocuments();
     } else {
       boardList = await Board.find({ boardType: type })
         .skip((page - 1) * pageSize)
@@ -55,8 +60,9 @@ const getBoardList = async (req, res) => {
         .sort({ createdAt: -1 });
 
       totalBoards = await Board.countDocuments({ boardType: type });
-      totalPages = Math.ceil(totalBoards / pageSize);
     }
+
+    const totalPages = Math.ceil(totalBoards / pageSize);
 
     return res.send({ boardList, totalPages, totalBoards, currentPage: page });
   } catch (err) {
