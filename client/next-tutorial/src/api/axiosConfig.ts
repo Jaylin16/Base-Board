@@ -18,7 +18,12 @@ api.interceptors.response.use(
       window.location.href = "/login";
     }
 
-    return err;
+    //토큰은 있으나 권한이 없는 경우
+    if (statusCode === 403) {
+      alert("권한이 없는 요청입니다.");
+    }
+
+    return Promise.reject(err);
   }
 );
 

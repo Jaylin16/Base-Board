@@ -1,13 +1,13 @@
 "use client";
 
-import { useGetBoardDetail } from "@/api/board/useBoardApi";
+import { useDeleteBoard, useGetBoardDetail } from "@/api/board/useBoardApi";
 import {
   useCreateComment,
   useDeleteComment,
   useUpdateComment,
 } from "@/api/comment/useCommentApi";
 import { css } from "@emotion/react";
-import { ReadonlyURLSearchParams } from "next/navigation";
+import { ReadonlyURLSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 interface commentType {
@@ -23,6 +23,8 @@ interface DetailPageProps {
 }
 
 const DetailPage = ({ searchParams }: DetailPageProps) => {
+  const router = useRouter();
+
   const boardId = searchParams.get("item_id") as string;
 
   const [commentContent, setCommentContent] = useState<string>();
@@ -30,6 +32,7 @@ const DetailPage = ({ searchParams }: DetailPageProps) => {
   const [editComment, setEditComment] = useState<string>();
 
   const { data, isLoading, refetch } = useGetBoardDetail(boardId);
+  const deleteBoard = useDeleteBoard();
 
   const createComment = useCreateComment();
   const updateComment = useUpdateComment();
@@ -112,6 +115,14 @@ const DetailPage = ({ searchParams }: DetailPageProps) => {
     deleteComment.mutate(commentId);
   };
 
+  const deleteBoardButtonHandler = () => {
+    deleteBoard.mutate(boardId, {
+      onSuccess: () => {
+        router.push(`/${searchParams.get("main") as string}`);
+      },
+    });
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -120,7 +131,20 @@ const DetailPage = ({ searchParams }: DetailPageProps) => {
     <>
       <div css={rootStyle}>
         <div css={boardTitleStyle}>
-          📝 {content?.boardType.toUpperCase()} 게시판
+          <div css={titleLineStyle}>
+            📝 {content?.boardType.toUpperCase()} 게시판
+            <div css={editButtonWrapper}>
+              <button css={boardEditButtonStyle}>수정</button>
+              <span> | </span>
+              <button
+                css={boardEditButtonStyle}
+                onClick={deleteBoardButtonHandler}
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+
           <div css={fristLineStyle}>
             <div css={titleWrapper}>
               <span>{content?.boardCategory}</span>
@@ -133,7 +157,7 @@ const DetailPage = ({ searchParams }: DetailPageProps) => {
             </div>
           </div>
           <div css={secondLineStyle}>
-            <div>작성자: {content?.boardWriterNickname}</div>
+            <div> 작성자: {content?.boardWriterNickname} </div>
             <div>
               작성 일자: {formatDate(content?.createdAt, boardIntlOptions)}
             </div>
@@ -231,6 +255,25 @@ const boardTitleStyle = css`
   font-size: 18px;
 `;
 
+const titleLineStyle = css`
+  padding: 0 10px;
+
+  display: flex;
+  justify-content: space-between;
+`;
+
+const editButtonWrapper = css`
+  display: flex;
+  gap: 5px;
+`;
+
+const boardEditButtonStyle = css`
+  color: black;
+  font-size: 15px;
+
+  cursor: pointer;
+`;
+
 const fristLineStyle = css`
   color: #555555;
   border-top: 1.5px solid #1d3d65;
@@ -282,7 +325,7 @@ const commentStyle = css`
     font-size: 13px;
   }
 
-  span:first-child {
+  span:first-of-type {
     font-size: 18px;
   }
 `;
