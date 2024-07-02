@@ -220,6 +220,7 @@ const kboNowStyle = css`
 `;
 
 const bestRankStyle = css`
+  max-width: 35%;
   height: 365px;
 
   overflow: hidden;
