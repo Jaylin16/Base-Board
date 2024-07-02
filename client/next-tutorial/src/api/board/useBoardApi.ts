@@ -87,3 +87,24 @@ export const usePostBoard = () => {
     },
   });
 };
+
+export const useDeleteBoard = () => {
+  return useMutation({
+    mutationFn: async (boardId: string) => {
+      const response = await api({
+        method: "delete",
+        url: `/board/${boardId}`,
+      });
+
+      return response;
+    },
+
+    onSuccess: (res) => {
+      alert("게시글이 삭제되었습니다.");
+    },
+
+    onError: (err) => {
+      alert("게시글 삭제에 실패했습니다.");
+    },
+  });
+};
