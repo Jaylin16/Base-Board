@@ -2,6 +2,27 @@ const { User } = require("../models/User");
 
 //신규 회원 생성
 const createUser = async (req, res) => {
+  const { email, nickName } = req.body;
+
+  const emailExist = await User.findOne({ email });
+  const nickNameExist = await User.findOne({ nickName });
+
+  const error = {};
+  if (!!emailExist || !!nickNameExist) {
+    if (!!emailExist) {
+      error.email = "중복된 이메일 입니다.";
+    }
+
+    if (!!nickNameExist) {
+      error.nickName = "중복된 닉네임 입니다.";
+    }
+
+    return res.status(400).json({
+      registerSuccess: false,
+      err: error,
+    });
+  }
+
   const user = new User(req.body);
 
   await user
@@ -12,8 +33,8 @@ const createUser = async (req, res) => {
       });
     })
     .catch((err) => {
-      res.json({
-        success: false,
+      res.status(500).json({
+        registerSuccess: false,
         err: err,
       });
     });
@@ -61,6 +82,7 @@ const userLogin = async (req, res) => {
       .status(200)
       .json({
         loginSuccess: true,
+        userId: `${userInfoWithToken._id.toString()}`,
         userName: `${userInfoWithToken.nickName}`,
       });
   } catch (err) {
@@ -74,7 +96,6 @@ const checkAuth = (req, res) => {
     userId: req.user._id,
     role: req.user.role === 0 ? "user" : "admin", //0은 고객, 1은 관리자
     email: req.user.email,
-    name: req.user.name,
     nickName: req.user.nickName,
     image: req.user.image,
     isAuth: req.isAuth,

@@ -6,10 +6,6 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/key");
 
 const userSchema = mongoose.Schema({
-  name: {
-    type: String,
-    maxlength: 50,
-  },
   email: {
     type: String,
     trim: true, //trim으로 공백 제거
@@ -19,11 +15,13 @@ const userSchema = mongoose.Schema({
   password: {
     type: String,
     minlength: 5,
+    required: true,
   },
   nickName: {
     type: String,
     maxlength: 50,
     unique: true, //중복 허용 x
+    required: true,
   },
   role: {
     type: Number,
