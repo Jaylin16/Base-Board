@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "../axiosConfig";
+import { api, authApi } from "../axiosConfig";
 import { useMutation } from "@tanstack/react-query";
 
 interface commentPostType {
@@ -17,7 +17,7 @@ export const useCreateComment = () => {
 
   return useMutation({
     mutationFn: async (data: commentPostType) => {
-      const response = await api.post("/comment/write", data);
+      const response = await authApi.post("/comment/write", data);
 
       return response;
     },
@@ -35,7 +35,7 @@ export const useUpdateComment = () => {
 
   return useMutation({
     mutationFn: async (data: commentPutType) => {
-      const response = await api.put(`/comment/${data.commentId}`, data);
+      const response = await authApi.put(`/comment/${data.commentId}`, data);
 
       return response;
     },
@@ -55,7 +55,7 @@ export const useDeleteComment = () => {
 
   return useMutation({
     mutationFn: async (commentId: string) => {
-      const response = await api.delete(`/comment/${commentId}`);
+      const response = await authApi.delete(`/comment/${commentId}`);
 
       return response;
     },

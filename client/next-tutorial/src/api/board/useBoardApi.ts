@@ -1,6 +1,5 @@
 import { useQuery, useQueries } from "@tanstack/react-query";
-import api from "../axiosConfig";
-import axios from "axios";
+import { api, authApi } from "../axiosConfig";
 import { useMutation } from "@tanstack/react-query";
 
 const fetchData = async (type: string, page: number, pageSize: number) => {
@@ -77,7 +76,7 @@ export const useGetBoardDetail = (boardId: string) => {
 export const usePostBoard = () => {
   return useMutation({
     mutationFn: async (data: any) => {
-      const response = await api({
+      const response = await authApi({
         method: "post",
         url: "/board/write",
         data: data,
@@ -91,7 +90,7 @@ export const usePostBoard = () => {
 export const useDeleteBoard = () => {
   return useMutation({
     mutationFn: async (boardId: string) => {
-      const response = await api({
+      const response = await authApi({
         method: "delete",
         url: `/board/${boardId}`,
       });

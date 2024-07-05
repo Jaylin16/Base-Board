@@ -6,9 +6,10 @@ import {
   useDeleteComment,
   useUpdateComment,
 } from "@/api/comment/useCommentApi";
+import userStore from "@/store/userStore";
 import { css } from "@emotion/react";
 import { ReadonlyURLSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface commentType {
   _id: string;
@@ -25,6 +26,7 @@ interface DetailPageProps {
 const DetailPage = ({ searchParams }: DetailPageProps) => {
   const router = useRouter();
 
+  const { id } = userStore();
   const boardId = searchParams.get("item_id") as string;
 
   const [commentContent, setCommentContent] = useState<string>();
@@ -133,7 +135,7 @@ const DetailPage = ({ searchParams }: DetailPageProps) => {
         <div css={boardTitleStyle}>
           <div css={titleLineStyle}>
             📝 {content?.boardType.toUpperCase()} 게시판
-            <div css={editButtonWrapper}>
+            <div css={editButtonWrapper(id === content?.boardWriterId)}>
               <button css={boardEditButtonStyle}>수정</button>
               <span> | </span>
               <button
@@ -197,7 +199,7 @@ const DetailPage = ({ searchParams }: DetailPageProps) => {
                       saveEditCommentButtonHandler(comment._id);
                     }}
                   >
-                    {"저장"}
+                    저장
                   </button>
 
                   <button
@@ -262,8 +264,8 @@ const titleLineStyle = css`
   justify-content: space-between;
 `;
 
-const editButtonWrapper = css`
-  display: flex;
+const editButtonWrapper = (isEditMode: boolean) => css`
+  display: ${isEditMode ? "flex" : "none"};
   gap: 5px;
 `;
 
