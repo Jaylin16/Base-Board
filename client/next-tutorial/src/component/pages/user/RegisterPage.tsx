@@ -76,7 +76,18 @@ const RegisterPage: React.FC = () => {
         setSignUpSuccess(true);
       },
       onError: (err) => {
-        alert("회원가입에 실패했습니다. 다시 시도해주세요.");
+        const { email, nickName } = err.response.data.err;
+
+        const duplicate = [
+          email ? "이메일" : null,
+          nickName ? "닉네임" : null,
+        ].filter(Boolean);
+
+        const message = duplicate.length
+          ? `중복된 ${duplicate.join(", ")}입니다. \n\n다시 시도해주세요.`
+          : "오류가 발생했습니다. 다시 시도해주세요.";
+
+        alert(message);
       },
     });
   };
