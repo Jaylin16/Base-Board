@@ -5,7 +5,30 @@ const api = Axios.create({
   withCredentials: true,
 });
 
-api.interceptors.response.use(
+const authApi = Axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  withCredentials: true,
+});
+
+authApi.interceptors.request.use(
+  function (req) {
+    const cookie = document.cookie;
+
+    //토큰이 없는 경우
+    if (!cookie) {
+      alert("로그인이 필요한 서비스 입니다.");
+      window.location.href = "/login";
+      return Promise.reject(401);
+    }
+
+    return req;
+  },
+  function (err) {
+    return err;
+  }
+);
+
+authApi.interceptors.response.use(
   function (res) {
     return res;
   },
@@ -27,4 +50,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export { api, authApi };

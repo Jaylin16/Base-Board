@@ -4,9 +4,12 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import CustomCheckbox from "@/component/common/CustomCheckbox";
 import { useUpdateLogin } from "@/api/user/useLogin";
+import userStore from "@/store/userStore";
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
+  const { setId } = userStore((state) => state);
+
   const [checked, setChecked] = useState(false);
   const [emailFilled, setEmailFilled] = useState(false);
   const [passwordFilled, setPasswordFilled] = useState(false);
@@ -57,6 +60,8 @@ const LoginPage: React.FC = () => {
     updateLogin.mutate(params, {
       onSuccess: (res) => {
         localStorage.setItem("nickName", res.data.userName);
+        setId(res.data.userId);
+
         router.push("/");
       },
       onError: (err) => {
