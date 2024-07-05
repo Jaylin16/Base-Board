@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import api from "../axiosConfig";
+import { api } from "../axiosConfig";
 
 const getSearchResult = async (keyword: string) => {
   const result = await api({
