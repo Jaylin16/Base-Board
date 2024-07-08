@@ -4,13 +4,15 @@ import Image from "next/image";
 import Logo from "../../public/image/header/Base-board logo.svg";
 import searchIcon from "../../public/image/header/serch-Icon.svg";
 import { useEffect, useState } from "react";
-import { useLogout } from "@/api/user/useLogin";
+import { useAuth, useLogout } from "@/api/user/useLogin";
 import { Dialog } from "@mui/material";
+import userStore from "@/store/userStore";
 
 const Header = () => {
   const router = useRouter();
   const pathname = usePathname();
   const logout = useLogout();
+  const { setId } = userStore();
 
   const [keyword, setKeyword] = useState<string>("");
   const [isLogout, setIsLogout] = useState(false);
@@ -54,6 +56,7 @@ const Header = () => {
     if (isLogout) {
       logout.mutate();
 
+      setId("");
       setIsLogout(false);
       router.push("/");
     }
