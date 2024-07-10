@@ -1,4 +1,6 @@
 # Base-Board
+![logo](https://github.com/Jaylin16/Base-Board/assets/113872338/75e6f51c-f266-4077-b301-12bff3aee62c)
+
 ## 프로젝트 소개
 
 | **구분** | **내용** |
