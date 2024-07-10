@@ -18,16 +18,19 @@
 
 </br>
 
-## 아키텍처 및 DB schema
+## 아키텍처 • Flow chart • ERD
 ### - 아키텍처
+![서비스 아키텍쳐](https://github.com/Jaylin16/Base-Board/assets/113872338/cc7e702d-21ff-4653-b472-909fb5f3ca29)
 
 </br>
 
 ### - Flow chart
+![플로우 차트](https://github.com/Jaylin16/Base-Board/assets/113872338/d5030afb-70d7-49d9-8137-09e4aed24838)
 
 </br>
 
-### - DB schema
+### - ERD
+![ERD](https://github.com/Jaylin16/Base-Board/assets/113872338/5050103c-9642-4b23-99b2-51db84893c24)
 
 </br>
 
