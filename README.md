@@ -41,28 +41,28 @@
 <details>
 <summary> 회원가입/로그인/로그아웃 </summary>
 <div markdown="1">
-
+![회원가입~로그아웃](https://github.com/Jaylin16/Base-Board/assets/113872338/e382074e-2e95-43b6-99ef-1a6aded8d29a)
 
 </details>
 
 <details>
-<summary>게시글 CRUD</summary>
+<summary>게시글 CRD</summary>
 <div markdown="1">
-
+![게시글](https://github.com/Jaylin16/Base-Board/assets/113872338/67d7026a-f903-4d5f-a948-d4de36621240)
 
 </details>
 
 <details>
 <summary>댓글 CRUD</summary>
 <div markdown="1">
-
+![댓글](https://github.com/Jaylin16/Base-Board/assets/113872338/9302c5b0-cf5e-49b5-aa1a-36186835d3b1)
 
 </details>
 
 <details>
 <summary>검색</summary>
 <div markdown="1">
-
+![검색](https://github.com/Jaylin16/Base-Board/assets/113872338/d09f9e4c-bcf0-4f2d-8e56-b34ae37f80f1)
 
 </details>
 
