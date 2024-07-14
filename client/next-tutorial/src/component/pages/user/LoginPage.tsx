@@ -8,7 +8,7 @@ import userStore from "@/store/userStore";
 
 const LoginPage: React.FC = () => {
   const router = useRouter();
-  const { setId } = userStore((state) => state);
+  const { setId } = userStore.getState();
 
   const [checked, setChecked] = useState(false);
   const [emailFilled, setEmailFilled] = useState(false);
