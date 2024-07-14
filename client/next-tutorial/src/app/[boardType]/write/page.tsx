@@ -4,22 +4,25 @@ import "@toast-ui/editor/dist/toastui-editor.css";
 import { Editor } from "@toast-ui/editor";
 import { useEffect, useRef, useState } from "react";
 import { usePostBoard } from "@/api/board/useBoardApi";
-import { ReadonlyURLSearchParams, useRouter } from "next/navigation";
-
-interface WritePageProps {
-  searchParams: ReadonlyURLSearchParams;
-}
+import { useRouter } from "next/navigation";
+import { BOARD } from "@/constants/board";
 
 interface categoryListType {
   name: string;
   category: string;
 }
 
-const WritePage = ({ searchParams }: WritePageProps) => {
+type boardType = {
+  params: {
+    boardType: string;
+  };
+};
+
+const WritePage = ({ params }: boardType) => {
   const router = useRouter();
   const postBoard = usePostBoard();
 
-  const [type, setType] = useState<string>(searchParams?.get("main") as string);
+  const [type, setType] = useState<string>(params.boardType);
   const [title, setTitle] = useState<string>();
   const [category, setCategory] = useState<string>("");
   const [categoryList, setCategoryList] = useState<{
@@ -28,12 +31,7 @@ const WritePage = ({ searchParams }: WritePageProps) => {
   const [contents, setContents] = useState<string>();
   const [disableButton, setDisableButton] = useState(false);
 
-  const typeArr = [
-    { name: "kbo", type: "KBO" },
-    { name: "baseball", type: "야구" },
-    { name: "board", type: "자유" },
-    { name: "notice", type: "공지" },
-  ];
+  const typeArr = ["kbo", "baseball", "board", "notice"];
 
   const kboArr = [
     { name: "SSG", category: "SSG 랜더스" },
@@ -120,14 +118,7 @@ const WritePage = ({ searchParams }: WritePageProps) => {
     const html = editorRef.current?.getHTML();
 
     const data = {
-      type:
-        type === "baseball"
-          ? "야구"
-          : type === "board"
-          ? "자유"
-          : type === "notice"
-          ? "공지"
-          : type,
+      type: BOARD[type].korean,
       category: category,
       boardTitle: title,
       boardContents: html,
@@ -180,7 +171,9 @@ const WritePage = ({ searchParams }: WritePageProps) => {
   return (
     <>
       <div css={baseLayout}>
-        <div css={pageTitleStyle}>✏️ {type?.toUpperCase()} 글쓰기</div>
+        <div css={pageTitleStyle}>
+          ✏️ {BOARD[type].title?.toUpperCase()} 글쓰기
+        </div>
         <div css={writeFieldStyle}>
           <div css={inputWrapper}>
             <div css={titleInputWrapper}>
@@ -195,8 +188,8 @@ const WritePage = ({ searchParams }: WritePageProps) => {
                   <option value=""> —— 글타입 —— </option>;
                   {typeArr?.map((item, index) => {
                     return (
-                      <option key={index} value={item.name}>
-                        {item.type}
+                      <option key={index} value={item}>
+                        {BOARD[item].korean.toUpperCase()}
                       </option>
                     );
                   })}
