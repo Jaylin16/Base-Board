@@ -79,7 +79,7 @@ const Header = () => {
               <div
                 css={menuItem(pathname.includes(item.link))}
                 key={item.no}
-                onClick={() => router.push(item.link)}
+                onClick={() => router.push(`/${item.link}`)}
               >
                 <p> {item.title} </p>
               </div>
@@ -100,7 +100,7 @@ const Header = () => {
             </button>
           </form>
 
-          {localStorage.getItem("nickName") ? (
+          {localStorage?.getItem("nickName") ? (
             <div css={logoutWrapper}>
               <div css={nicknameStyle}>{localStorage.getItem("nickName")}</div>
               <button css={logoutButtonStyle} onClick={logoutButtonHandler}>

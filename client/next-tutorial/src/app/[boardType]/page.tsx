@@ -1,18 +1,28 @@
 "use client";
+
 import { useGetBoardList } from "@/api/board/useBoardApi";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { css } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { Pagination, PaginationItem } from "@mui/material";
+import { BOARD } from "@/constants/board";
 
-const NoticePage = () => {
+type boardType = {
+  params: {
+    boardType: string;
+  };
+};
+
+const BoardPage = ({ params }: boardType) => {
+  const type = params.boardType;
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   const pageSize = 10;
   const [page, setPage] = useState<number>(1);
-  const { data, refetch } = useGetBoardList("공지", page, pageSize);
+  const { data, refetch } = useGetBoardList(BOARD[type].korean, page, pageSize);
 
   const formatDate = (date: Date) => {
     const newDate = new Date(date);
@@ -34,18 +44,6 @@ const NoticePage = () => {
     setPage(newPage);
   };
 
-  const onClickWriteButton = () => {
-    const currentParmas = Object.fromEntries(searchParams);
-    let newSearchParmas = { ...currentParmas };
-    newSearchParmas = {
-      ...currentParmas,
-      main: `${pathname.slice(1)}`,
-      page: `write`,
-    };
-
-    router.push(`?${new URLSearchParams(newSearchParmas)}`);
-  };
-
   const onClickDetailButton = (id: string) => {
     const currentParmas = Object.fromEntries(searchParams);
     let newSearchParmas = { ...currentParmas };
@@ -63,8 +61,8 @@ const NoticePage = () => {
     <>
       <div css={rootStyle}>
         <div css={titleWrapper}>
-          <div css={titleStyle}> 📌 공지사항 </div>
-          <div css={writeButton} onClick={onClickWriteButton}>
+          <div css={titleStyle}> {BOARD[type].title} </div>
+          <div css={writeButton} onClick={() => router.push(`${type}/write`)}>
             ✏️ 글 작성
           </div>
         </div>
@@ -87,9 +85,9 @@ const NoticePage = () => {
                     <div
                       css={lineStyle(index + 1 === value.length)}
                       key={content._id}
-                      onClick={() => {
-                        onClickDetailButton(content._id);
-                      }}
+                      onClick={() =>
+                        router.push(`${type}/detail?item_no=${content._id}`)
+                      }
                     >
                       <span className="noStyle"> {content.boardId} </span>
                       <span className="categoryStyle">
@@ -133,7 +131,7 @@ const NoticePage = () => {
   );
 };
 
-export default NoticePage;
+export default BoardPage;
 
 const rootStyle = css`
   height: calc(100vh - 97px);
