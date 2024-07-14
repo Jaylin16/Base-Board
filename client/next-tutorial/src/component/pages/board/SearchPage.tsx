@@ -163,6 +163,8 @@ const lineStyle = (isLast: boolean) => css`
   display: flex;
   align-items: center;
 
+  cursor: pointer;
+
   .noStyle {
     width: 7%;
     display: flex;
