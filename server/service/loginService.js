@@ -68,7 +68,7 @@ const userLogin = async (req, res) => {
     const userInfoWithToken = await userInfo.createToken();
 
     const cookieOptions = {
-      // httpOnly: true,
+      httpOnly: true, //활성화시 JS에서 document.cookie 접근 불가.
       maxAge: 1000 * 60 * 60 * 24, //1일
       // maxAge: 1000 * 60 * 5, //5분
       secure: process.env.NODE_ENV === "production", //  Https 사이트에서 설정한 쿠키만 엑세스 가능

@@ -8,7 +8,7 @@ import {
 } from "@/api/comment/useCommentApi";
 import userStore from "@/store/userStore";
 import { css } from "@emotion/react";
-import { ReadonlyURLSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface commentType {
@@ -19,15 +19,21 @@ interface commentType {
   createdAt: Date;
 }
 
-interface DetailPageProps {
-  searchParams: ReadonlyURLSearchParams;
-}
+type paramsType = {
+  params: {
+    boardType: string;
+  };
 
-const DetailPage = ({ searchParams }: DetailPageProps) => {
+  searchParams: {
+    item_no: string;
+  };
+};
+
+const DetailPage = (params: paramsType) => {
   const router = useRouter();
 
   const { id } = userStore();
-  const boardId = searchParams.get("item_id") as string;
+  const boardId = params.searchParams.item_no;
 
   const [commentContent, setCommentContent] = useState<string>();
   const [editCommentId, setEditCommentId] = useState<string | null>(null);
@@ -120,7 +126,7 @@ const DetailPage = ({ searchParams }: DetailPageProps) => {
   const deleteBoardButtonHandler = () => {
     deleteBoard.mutate(boardId, {
       onSuccess: () => {
-        router.push(`/${searchParams.get("main") as string}`);
+        router.push(`/${params.params.boardType}`);
       },
     });
   };

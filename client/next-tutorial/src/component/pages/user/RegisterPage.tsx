@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import CustomCheckbox from "@/component/common/CustomCheckbox";
 import { useUpdateSignUp } from "@/api/user/useSignUp";
 import { Dialog, DialogTitle, DialogContent } from "@mui/material";
+import { AxiosError, isAxiosError } from "axios";
 
 const RegisterPage: React.FC = () => {
   const router = useRouter();
@@ -76,18 +77,22 @@ const RegisterPage: React.FC = () => {
         setSignUpSuccess(true);
       },
       onError: (err) => {
-        const { email, nickName } = err.response.data.err;
+        if (isAxiosError(err)) {
+          const { email, nickName } = err.response?.data.err;
 
-        const duplicate = [
-          email ? "이메일" : null,
-          nickName ? "닉네임" : null,
-        ].filter(Boolean);
+          const duplicate = [
+            email ? "이메일" : null,
+            nickName ? "닉네임" : null,
+          ].filter(Boolean);
 
-        const message = duplicate.length
-          ? `중복된 ${duplicate.join(", ")}입니다. \n\n다시 시도해주세요.`
-          : "오류가 발생했습니다. 다시 시도해주세요.";
+          const message = duplicate.length
+            ? `중복된 ${duplicate.join(", ")}입니다. \n\n다시 시도해주세요.`
+            : "오류가 발생했습니다. 다시 시도해주세요.";
 
-        alert(message);
+          alert(message);
+        } else {
+          alert("서버 에러. 다시 시도해주세요.");
+        }
       },
     });
   };
