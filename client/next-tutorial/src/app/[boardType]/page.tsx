@@ -1,11 +1,12 @@
 "use client";
 
 import { useGetBoardList } from "@/api/board/useBoardApi";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { css } from "@emotion/react";
 import { useEffect, useState } from "react";
 import { Pagination, PaginationItem } from "@mui/material";
 import { BOARD } from "@/constants/board";
+import DateFormat from "@/utils/DateFormat";
 
 type boardType = {
   params: {
@@ -17,23 +18,15 @@ const BoardPage = ({ params }: boardType) => {
   const type = params.boardType;
 
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   const pageSize = 10;
   const [page, setPage] = useState<number>(1);
   const { data, refetch } = useGetBoardList(BOARD[type].korean, page, pageSize);
 
-  const formatDate = (date: Date) => {
-    const newDate = new Date(date);
-
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    };
-
-    return new Intl.DateTimeFormat("ko", options).format(newDate);
+  const boardIntlOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
   };
 
   useEffect(() => {
@@ -42,19 +35,6 @@ const BoardPage = ({ params }: boardType) => {
 
   const onPageChange = (event: React.ChangeEvent<any>, newPage: number) => {
     setPage(newPage);
-  };
-
-  const onClickDetailButton = (id: string) => {
-    const currentParmas = Object.fromEntries(searchParams);
-    let newSearchParmas = { ...currentParmas };
-    newSearchParmas = {
-      ...currentParmas,
-      main: `${pathname.slice(1)}`,
-      page: `detail`,
-      item_id: id,
-    };
-
-    router.push(`?${new URLSearchParams(newSearchParmas)}`);
   };
 
   return (
@@ -100,7 +80,7 @@ const BoardPage = ({ params }: boardType) => {
                         </div>
                       </span>
                       <span className="dateStyle">
-                        {formatDate(content.createdAt)}
+                        {DateFormat(content.createdAt, boardIntlOptions)}
                       </span>
                       <span className="hitStyle"> {content.hit} </span>
                     </div>

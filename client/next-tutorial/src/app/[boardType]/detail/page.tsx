@@ -6,6 +6,7 @@ import {
   useDeleteComment,
   useUpdateComment,
 } from "@/api/comment/useCommentApi";
+import DateFormat from "@/utils/DateFormat";
 import userStore from "@/store/userStore";
 import { css } from "@emotion/react";
 import { useRouter } from "next/navigation";
@@ -60,11 +61,6 @@ const DetailPage = (params: paramsType) => {
     day: "numeric",
     hour: "numeric",
     minute: "numeric",
-  };
-
-  const formatDate = (date: Date, IntlOption: Intl.DateTimeFormatOptions) => {
-    const newDate = new Date(date);
-    return new Intl.DateTimeFormat("ko", IntlOption).format(newDate);
   };
 
   /* 여기부터 이벤트 핸들러 모음 입니다. */
@@ -167,7 +163,7 @@ const DetailPage = (params: paramsType) => {
           <div css={secondLineStyle}>
             <div> 작성자: {content?.boardWriterNickname} </div>
             <div>
-              작성 일자: {formatDate(content?.createdAt, boardIntlOptions)}
+              작성 일자: {DateFormat(content?.createdAt, boardIntlOptions)}
             </div>
           </div>
         </div>
@@ -187,7 +183,7 @@ const DetailPage = (params: paramsType) => {
                 <div css={commentStyle}>
                   <span> {comment.commentWriterNickname} </span>
                   <span>
-                    {formatDate(comment.createdAt, commentIntlOptions)}
+                    {DateFormat(comment.createdAt, commentIntlOptions)}
                   </span>
 
                   <button

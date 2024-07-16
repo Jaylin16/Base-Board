@@ -4,6 +4,7 @@ import { useGetSearch } from "@/api/search/useSearchApi";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { css } from "@emotion/react";
+import DateFormat from "@/utils/DateFormat";
 
 interface boardListType {
   _id: string;
@@ -23,16 +24,10 @@ const SearchPage = () => {
 
   const { data, refetch, isLoading } = useGetSearch(keyword || "");
 
-  const formatDate = (date: Date) => {
-    const newDate = new Date(date);
-
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "numeric",
-      day: "numeric",
-    };
-
-    return new Intl.DateTimeFormat("ko", options).format(newDate);
+  const boardIntlOptions: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
   };
 
   useEffect(() => {
@@ -87,7 +82,7 @@ const SearchPage = () => {
                       </span>
                       <span css={listTitleStyle}> {item.boardTitle} </span>
                       <span className="dateStyle">
-                        {formatDate(item.createdAt)}
+                        {DateFormat(item.createdAt, boardIntlOptions)}
                       </span>
                       <span className="hitStyle"> {item.hit} </span>
                     </div>
